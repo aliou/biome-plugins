@@ -1,0 +1,84 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+
+  publish:
+    name: Publish
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+          scope: "@aliou"
+          cache: npm
+
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest
+
+      - run: npm ci
+
+      - name: Get release info
+        id: release-info
+        run: |
+          npx changeset status --output=release.json 2>/dev/null || echo '{"releases":[]}' > release.json
+          node <<NODE
+          const fs = require('fs');
+          const release = JSON.parse(fs.readFileSync('release.json', 'utf8'));
+          const releases = release.releases?.filter(r => r.type !== 'none') || [];
+
+          let title = 'Version Packages';
+          let commit = 'Version Packages';
+          if (releases.length === 1) {
+            const { name, newVersion } = releases[0];
+            title = 'Updating ' + name + ' to version ' + newVersion;
+            commit = name + '@' + newVersion;
+          }
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'title=' + title + '\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'commit=' + commit + '\n');
+          NODE
+          rm -f release.json
+        continue-on-error: true
+
+      - name: Create Release PR or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: npx changeset version
+          publish: npx changeset publish
+          title: ${{ steps.release-info.outputs.title || 'Version Packages' }}
+          commit: ${{ steps.release-info.outputs.commit || 'Version Packages' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
