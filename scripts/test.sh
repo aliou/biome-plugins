@@ -59,6 +59,10 @@ echo "--- phosphor-icon-suffix ---"
 test_fail "tests/fail/phosphor-icon-suffix.tsx" "Phosphor icon imports require Icon suffix"
 test_pass "tests/pass/phosphor-icon-suffix.tsx"
 
+echo "--- no-js-import-extension ---"
+test_fail "tests/fail/no-js-import-extension.tsx" "Remove the .js extension"
+test_pass "tests/pass/no-js-import-extension.tsx"
+
 echo ""
 if [ "$FAILED" -eq 1 ]; then
   echo "SOME TESTS FAILED"

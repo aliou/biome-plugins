@@ -59,6 +59,18 @@ Biome extends GritQL with one function:
 
 ```
 plugins/           -- GritQL plugin files (.grit)
+tests/fail/        -- Fixture files that must trigger diagnostics
+tests/pass/        -- Fixture files that must pass cleanly
+scripts/test.sh    -- Test runner (pnpm test)
 README.md          -- Usage instructions for consumers
 AGENTS.md          -- This file (context for coding agents)
 ```
+
+## Plugins
+
+| Plugin | Description |
+|---|---|
+| `no-inline-imports` | Disallows `await import()` and `require()` inside functions. All imports should be static at the top of the file. |
+| `no-interpolated-classname` | Disallows template literals in `className` attributes. Enforces using a `cn()` utility instead. |
+| `phosphor-icon-suffix` | Enforces that Phosphor icon imports end with the `Icon` suffix (e.g. `HouseIcon`, not `House`). |
+| `no-js-import-extension` | Disallows `.js` extensions in import and re-export paths. The fix is to remove the extension and set `moduleResolution: "bundler"` in tsconfig.json. |
