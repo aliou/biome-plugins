@@ -1,0 +1,65 @@
+engine biome(1.0)
+language js(jsx)
+
+or {
+    `import { $a } from "@phosphor-icons/react"` where {
+        $a <: not r".*Icon",
+        register_diagnostic(span = $a, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b } from "@phosphor-icons/react"` where {
+        $a <: not r".*Icon",
+        register_diagnostic(span = $a, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b } from "@phosphor-icons/react"` where {
+        $b <: not r".*Icon",
+        register_diagnostic(span = $b, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c } from "@phosphor-icons/react"` where {
+        $a <: not r".*Icon",
+        register_diagnostic(span = $a, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c } from "@phosphor-icons/react"` where {
+        $b <: not r".*Icon",
+        register_diagnostic(span = $b, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c } from "@phosphor-icons/react"` where {
+        $c <: not r".*Icon",
+        register_diagnostic(span = $c, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d } from "@phosphor-icons/react"` where {
+        $a <: not r".*Icon",
+        register_diagnostic(span = $a, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d } from "@phosphor-icons/react"` where {
+        $b <: not r".*Icon",
+        register_diagnostic(span = $b, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d } from "@phosphor-icons/react"` where {
+        $c <: not r".*Icon",
+        register_diagnostic(span = $c, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d } from "@phosphor-icons/react"` where {
+        $d <: not r".*Icon",
+        register_diagnostic(span = $d, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d, $e } from "@phosphor-icons/react"` where {
+        $a <: not r".*Icon",
+        register_diagnostic(span = $a, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d, $e } from "@phosphor-icons/react"` where {
+        $b <: not r".*Icon",
+        register_diagnostic(span = $b, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d, $e } from "@phosphor-icons/react"` where {
+        $c <: not r".*Icon",
+        register_diagnostic(span = $c, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d, $e } from "@phosphor-icons/react"` where {
+        $d <: not r".*Icon",
+        register_diagnostic(span = $d, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    },
+    `import { $a, $b, $c, $d, $e } from "@phosphor-icons/react"` where {
+        $e <: not r".*Icon",
+        register_diagnostic(span = $e, message = "Phosphor icon imports require Icon suffix", severity = "error")
+    }
+}

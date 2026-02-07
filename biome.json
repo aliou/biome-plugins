@@ -1,0 +1,14 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.12/schema.json",
+  "plugins": [
+    "plugins/no-inline-imports.grit",
+    "plugins/no-interpolated-classname.grit",
+    "plugins/phosphor-icon-suffix.grit"
+  ],
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": false
+    }
+  }
+}
