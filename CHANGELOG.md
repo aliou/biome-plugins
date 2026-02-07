@@ -1,5 +1,15 @@
 # @aliou/biome-plugins
 
+## 0.2.0
+
+### Minor Changes
+
+- 04b0993: Add no-js-import-extension plugin that disallows .js extensions in import and re-export paths
+
+### Patch Changes
+
+- b900cf9: Bundle biome-gritql-plugins skill for agents working with this package
+
 ## 0.1.0
 
 ### Minor Changes
