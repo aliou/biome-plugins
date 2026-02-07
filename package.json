@@ -1,6 +1,6 @@
 {
   "name": "@aliou/biome-plugins",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Custom Biome lint rules written as GritQL plugins",
   "license": "MIT",
   "packageManager": "pnpm@10.4.1",
