@@ -14,12 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm test
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
 
   publish:
     name: Publish
@@ -36,22 +37,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
           scope: "@aliou"
-          cache: npm
+          cache: pnpm
 
       - name: Upgrade npm for OIDC support
         run: npm install -g npm@latest
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Get release info
         id: release-info
         run: |
-          npx changeset status --output=release.json 2>/dev/null || echo '{"releases":[]}' > release.json
+          pnpm changeset status --output=release.json 2>/dev/null || echo '{"releases":[]}' > release.json
           node <<NODE
           const fs = require('fs');
           const release = JSON.parse(fs.readFileSync('release.json', 'utf8'));
@@ -75,8 +78,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: npx changeset version
-          publish: npx changeset publish
+          version: pnpm changeset version
+          publish: pnpm changeset publish
           title: ${{ steps.release-info.outputs.title || 'Version Packages' }}
           commit: ${{ steps.release-info.outputs.commit || 'Version Packages' }}
         env:
