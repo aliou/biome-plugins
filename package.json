@@ -5,8 +5,12 @@
   "license": "MIT",
   "packageManager": "pnpm@10.4.1",
   "files": [
-    "plugins"
+    "plugins",
+    "skills"
   ],
+  "pi": {
+    "skills": ["skills"]
+  },
   "scripts": {
     "test": "bash scripts/test.sh"
   },
