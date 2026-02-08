@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.3.1
+
+### Patch Changes
+
+- db2f866: Sync plugin tables in README and add post-creation reminder to skill
+
 ## 0.3.0
 
 ### Minor Changes
