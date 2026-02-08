@@ -74,3 +74,4 @@ AGENTS.md          -- This file (context for coding agents)
 | `no-interpolated-classname` | Disallows template literals in `className` attributes. Enforces using a `cn()` utility instead. |
 | `phosphor-icon-suffix` | Enforces that Phosphor icon imports end with the `Icon` suffix (e.g. `HouseIcon`, not `House`). |
 | `no-js-import-extension` | Disallows `.js` extensions in import and re-export paths. The fix is to remove the extension and set `moduleResolution: "bundler"` in tsconfig.json. |
+| `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. |

@@ -4,7 +4,8 @@
     "plugins/no-inline-imports.grit",
     "plugins/no-interpolated-classname.grit",
     "plugins/phosphor-icon-suffix.grit",
-    "plugins/no-js-import-extension.grit"
+    "plugins/no-js-import-extension.grit",
+    "plugins/no-emojis.grit"
   ],
   "linter": {
     "enabled": true,
