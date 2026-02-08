@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.2.1
+
+### Patch Changes
+
+- 02ffdff: Add no-emojis plugin to disallow emoji characters in string literals, template literals, and JSX text
+
 ## 0.2.0
 
 ### Minor Changes
