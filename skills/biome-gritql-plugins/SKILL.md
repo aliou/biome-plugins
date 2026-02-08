@@ -173,6 +173,14 @@ Plugin diagnostics appear with the `plugin` category in output.
 - No automatic npm package resolution (must use relative paths)
 - GritQL support in Biome is still experimental; some GritQL features are missing
 
+## After creating a plugin
+
+After creating a new plugin, update the plugin table in the following files so they stay in sync:
+- `README.md` (consumer-facing)
+- `AGENTS.md` (agent context)
+
+Add a row to the plugin table in each file with the plugin filename (without extension) and a short description.
+
 ## References
 
 - Plugin docs: https://biomejs.dev/linter/plugins

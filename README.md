@@ -9,6 +9,8 @@ Custom Biome lint rules written as GritQL plugins.
 | `no-inline-imports` | Disallows `await import()` and `require()` inside functions. All imports should be static `import` statements at the top of the file. |
 | `no-interpolated-classname` | Disallows template literals in `className` attributes. Enforces using a `cn()` utility instead. |
 | `phosphor-icon-suffix` | Enforces that Phosphor icon imports end with the `Icon` suffix (e.g. `HouseIcon`, not `House`). |
+| `no-js-import-extension` | Disallows `.js` extensions in import and re-export paths. Use `moduleResolution: "bundler"` in tsconfig.json instead. |
+| `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. |
 
 ## Usage
 
