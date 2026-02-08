@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.3.0
+
+### Minor Changes
+
+- fcd49ce: Correct version bump: new plugins are minor releases, not patches. This bump acknowledges that the no-emojis plugin added in 0.2.1 was a feature addition.
+
 ## 0.2.1
 
 ### Patch Changes
