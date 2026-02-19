@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.3.2
+
+### Patch Changes
+
+- 5fc2a49: no-inline-imports: detect TsImportType nodes (e.g. `import("module").Type` in type positions)
+
 ## 0.3.1
 
 ### Patch Changes
