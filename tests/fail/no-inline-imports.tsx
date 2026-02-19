@@ -14,3 +14,8 @@ function setup() {
   const pkg = require("some-package");
   return pkg;
 }
+
+// Inline type imports should also trigger errors.
+const ctx: import("@mariozechner/pi-coding-agent").ExtensionContext = {};
+type Foo = import("./types").Bar;
+function test(arg: import("./module").Something) {}
