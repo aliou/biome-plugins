@@ -67,6 +67,10 @@ echo "--- no-emojis ---"
 test_fail "tests/fail/no-emojis.tsx" "Emojis are not allowed in code"
 test_pass "tests/pass/no-emojis.tsx"
 
+echo "--- no-inner-types ---"
+test_fail "tests/fail/no-inner-types.tsx" "Do not declare TypeScript types inside functions"
+test_pass "tests/pass/no-inner-types.tsx"
+
 echo ""
 if [ "$FAILED" -eq 1 ]; then
   echo "SOME TESTS FAILED"
