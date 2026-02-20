@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.4.0
+
+### Minor Changes
+
+- 0a00dc1: Add a new `no-inner-types` plugin that disallows `type` and `interface` declarations inside function bodies.
+
 ## 0.3.2
 
 ### Patch Changes
