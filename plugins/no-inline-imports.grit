@@ -2,16 +2,17 @@ engine biome(1.0)
 language js(typescript,jsx)
 
 or {
-    JsFunctionBody() as $body where {
-        $body <: contains `await import($source)` as $import,
+    `await import($source)` as $import where {
+        $import <: within JsFunctionBody(),
+        not $import <: within `vi.mock($_, $_)`,
         register_diagnostic(
             span = $import,
             message = "All imports should be at the top of the file. Use a static `import` statement instead of a dynamic `await import()` buried in a function.",
             severity = "error"
         )
     },
-    JsFunctionBody() as $body where {
-        $body <: contains `require($source)` as $req,
+    `require($source)` as $req where {
+        $req <: within JsFunctionBody(),
         register_diagnostic(
             span = $req,
             message = "All imports should be at the top of the file. Use a static `import` statement instead of `require()` buried in a function.",
@@ -19,6 +20,7 @@ or {
         )
     },
     TsImportType() as $import where {
+        not $import <: within `vi.mock($_, $_)`,
         register_diagnostic(
             span = $import,
             message = "All imports should be at the top of the file. Use a top-level `import type` statement instead of an inline `import(\"...\")` type.",
