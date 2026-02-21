@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.4.1
+
+### Patch Changes
+
+- 43a9036: Allow dynamic imports and inline type imports inside vi.mock factory callbacks.
+
 ## 0.4.0
 
 ### Minor Changes
