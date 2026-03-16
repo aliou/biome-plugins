@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.5.0
+
+### Minor Changes
+
+- 9231b94: Add a new `no-ts-import-extension` plugin that disallows `.ts` extensions in import and re-export paths.
+
 ## 0.4.1
 
 ### Patch Changes
