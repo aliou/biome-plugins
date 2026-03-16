@@ -63,6 +63,10 @@ echo "--- no-js-import-extension ---"
 test_fail "tests/fail/no-js-import-extension.tsx" "Remove the .js extension"
 test_pass "tests/pass/no-js-import-extension.tsx"
 
+echo "--- no-ts-import-extension ---"
+test_fail "tests/fail/no-ts-import-extension.tsx" "Remove the .ts extension"
+test_pass "tests/pass/no-ts-import-extension.tsx"
+
 echo "--- no-emojis ---"
 test_fail "tests/fail/no-emojis.tsx" "Emojis are not allowed in code"
 test_pass "tests/pass/no-emojis.tsx"
