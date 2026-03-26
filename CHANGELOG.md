@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.6.0
+
+### Minor Changes
+
+- 4f2e6c0: Add `pi-no-node-exec` plugin: disallows importing from `child_process` in pi extensions. Use `pi.exec()` instead.
+
 ## 0.5.0
 
 ### Minor Changes
