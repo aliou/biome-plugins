@@ -1,0 +1,47 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    `import { $imports } from "child_process"` as $stmt where {
+        register_diagnostic(
+            span = $stmt,
+            message = "Do not use child_process directly. Use pi.exec() from the ExtensionAPI instead.",
+            severity = "error"
+        )
+    },
+    `import { $imports } from "node:child_process"` as $stmt where {
+        register_diagnostic(
+            span = $stmt,
+            message = "Do not use child_process directly. Use pi.exec() from the ExtensionAPI instead.",
+            severity = "error"
+        )
+    },
+    `import $name from "child_process"` as $stmt where {
+        register_diagnostic(
+            span = $stmt,
+            message = "Do not use child_process directly. Use pi.exec() from the ExtensionAPI instead.",
+            severity = "error"
+        )
+    },
+    `import $name from "node:child_process"` as $stmt where {
+        register_diagnostic(
+            span = $stmt,
+            message = "Do not use child_process directly. Use pi.exec() from the ExtensionAPI instead.",
+            severity = "error"
+        )
+    },
+    `require("child_process")` as $req where {
+        register_diagnostic(
+            span = $req,
+            message = "Do not use child_process directly. Use pi.exec() from the ExtensionAPI instead.",
+            severity = "error"
+        )
+    },
+    `require("node:child_process")` as $req where {
+        register_diagnostic(
+            span = $req,
+            message = "Do not use child_process directly. Use pi.exec() from the ExtensionAPI instead.",
+            severity = "error"
+        )
+    }
+}

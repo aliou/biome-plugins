@@ -77,3 +77,4 @@ AGENTS.md          -- This file (context for coding agents)
 | `no-ts-import-extension` | Disallows `.ts` extensions in import and re-export paths. The fix is to remove the extension and set `moduleResolution: "bundler"` in tsconfig.json. |
 | `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. |
 | `no-inner-types` | Disallows TypeScript `type` and `interface` declarations inside function bodies. |
+| `pi-no-node-exec` | Disallows importing from `child_process` / `node:child_process`. Use `pi.exec()` from the ExtensionAPI instead. |

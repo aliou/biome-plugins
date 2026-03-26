@@ -13,6 +13,7 @@ Custom Biome lint rules written as GritQL plugins.
 | `no-ts-import-extension` | Disallows `.ts` extensions in import and re-export paths. Use `moduleResolution: "bundler"` in tsconfig.json instead. |
 | `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. |
 | `no-inner-types` | Disallows TypeScript `type` and `interface` declarations inside function bodies. |
+| `pi-no-node-exec` | Disallows importing from `child_process` / `node:child_process` in [pi](https://pi.dev) extensions. Use `pi.exec()` from the ExtensionAPI instead. |
 
 ## Usage
 

@@ -7,7 +7,8 @@
     "plugins/no-js-import-extension.grit",
     "plugins/no-ts-import-extension.grit",
     "plugins/no-emojis.grit",
-    "plugins/no-inner-types.grit"
+    "plugins/no-inner-types.grit",
+    "plugins/pi-no-node-exec.grit"
   ],
   "linter": {
     "enabled": true,
