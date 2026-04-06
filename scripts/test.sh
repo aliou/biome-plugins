@@ -79,6 +79,10 @@ echo "--- pi-no-node-exec ---"
 test_fail "tests/fail/pi-no-node-exec.tsx" "Do not use child_process directly"
 test_pass "tests/pass/pi-no-node-exec.tsx"
 
+echo "--- no-buried-await ---"
+test_fail "tests/fail/no-buried-await.ts" "Do not bury await inside"
+test_pass "tests/pass/no-buried-await.ts"
+
 echo ""
 if [ "$FAILED" -eq 1 ]; then
   echo "SOME TESTS FAILED"

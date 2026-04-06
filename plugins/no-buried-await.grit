@@ -1,0 +1,10 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+`(await $value)` as $awaited where {
+    register_diagnostic(
+        span = $awaited,
+        message = "Do not bury await inside parentheses. Await the value first, then use it in a separate expression.",
+        severity = "error"
+    )
+}

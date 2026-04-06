@@ -8,7 +8,8 @@
     "plugins/no-ts-import-extension.grit",
     "plugins/no-emojis.grit",
     "plugins/no-inner-types.grit",
-    "plugins/pi-no-node-exec.grit"
+    "plugins/pi-no-node-exec.grit",
+    "plugins/no-buried-await.grit"
   ],
   "linter": {
     "enabled": true,

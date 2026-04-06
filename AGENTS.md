@@ -78,3 +78,4 @@ AGENTS.md          -- This file (context for coding agents)
 | `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. |
 | `no-inner-types` | Disallows TypeScript `type` and `interface` declarations inside function bodies. |
 | `pi-no-node-exec` | Disallows importing from `child_process` / `node:child_process`. Use `pi.exec()` from the ExtensionAPI instead. |
+| `no-buried-await` | Disallows burying `await` inside parentheses or call arguments. Await the value first, then use it in a separate expression. |
