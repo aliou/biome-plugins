@@ -1,6 +1,9 @@
 name: Test
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
 
 concurrency:
@@ -8,14 +11,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v5
+
+      - uses: actions/setup-node@v6
         with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run --if-present lint
+
+      - name: Typecheck
+        run: pnpm run --if-present typecheck
+
+      - name: Test
+        run: pnpm test
