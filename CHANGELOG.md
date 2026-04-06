@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.7.0
+
+### Minor Changes
+
+- c72c019: Add the `no-buried-await` plugin to disallow burying `await` inside parentheses. This catches patterns like `return (await foo()) || ""` and `Boolean(await foo())` and encourages awaiting the value first before using it in a separate expression.
+
 ## 0.6.0
 
 ### Minor Changes
