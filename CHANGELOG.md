@@ -1,5 +1,16 @@
 # @aliou/biome-plugins
 
+## 0.8.0
+
+### Minor Changes
+
+- eb09413: Add no-empty-catch plugin: disallows empty catch blocks
+
+### Patch Changes
+
+- 526fb68: Bump Biome peer dependency to >=2.5.0
+- ef2d41d: Add biome-plugins-setup skill for configuring plugins in consumer projects
+
 ## 0.7.0
 
 ### Minor Changes
