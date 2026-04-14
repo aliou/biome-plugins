@@ -9,7 +9,8 @@
     "plugins/no-emojis.grit",
     "plugins/no-inner-types.grit",
     "plugins/pi-no-node-exec.grit",
-    "plugins/no-buried-await.grit"
+    "plugins/no-buried-await.grit",
+    "plugins/no-empty-catch.grit"
   ],
   "linter": {
     "enabled": true,

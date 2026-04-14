@@ -15,6 +15,7 @@ Custom Biome lint rules written as GritQL plugins.
 | `no-inner-types` | Disallows TypeScript `type` and `interface` declarations inside function bodies. |
 | `pi-no-node-exec` | Disallows importing from `child_process` / `node:child_process` in [pi](https://pi.dev) extensions. Use `pi.exec()` from the ExtensionAPI instead. |
 | `no-buried-await` | Disallows burying `await` inside parentheses or call arguments. Await the value first, then use it in a separate expression. |
+| `no-empty-catch` | Disallows empty `catch` blocks. Catch blocks must contain actual code, not only comments. |
 
 ## Usage
 

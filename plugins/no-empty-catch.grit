@@ -1,0 +1,18 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+JsCatchClause() as $catch where {
+    not $catch <: contains JsExpressionStatement(),
+    not $catch <: contains JsReturnStatement(),
+    not $catch <: contains JsVariableStatement(),
+    not $catch <: contains JsThrowStatement(),
+    not $catch <: contains JsIfStatement(),
+    not $catch <: contains JsForStatement(),
+    not $catch <: contains JsForInStatement(),
+    not $catch <: contains JsWhileStatement(),
+    register_diagnostic(
+        span = $catch,
+        message = "Empty catch blocks are not allowed. Handle the error or add a comment explaining why it is intentionally ignored.",
+        severity = "error"
+    )
+}

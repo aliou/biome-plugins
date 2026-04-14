@@ -83,6 +83,10 @@ echo "--- no-buried-await ---"
 test_fail "tests/fail/no-buried-await.ts" "Do not bury await inside"
 test_pass "tests/pass/no-buried-await.ts"
 
+echo "--- no-empty-catch ---"
+test_fail "tests/fail/no-empty-catch.tsx" "Empty catch blocks are not allowed"
+test_pass "tests/pass/no-empty-catch.tsx"
+
 echo ""
 if [ "$FAILED" -eq 1 ]; then
   echo "SOME TESTS FAILED"
