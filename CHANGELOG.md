@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.8.1
+
+### Patch Changes
+
+- ed80bdb: Fix Biome peer dependency to >=2.4.0 (2.5.0 is not released yet)
+
 ## 0.8.0
 
 ### Minor Changes
