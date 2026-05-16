@@ -4,6 +4,52 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BIOME="${ROOT}/node_modules/.bin/biome"
 FAILED=0
+PASSED_COUNT=0
+FAILED_COUNT=0
+SHOW_ALL=0
+
+usage() {
+  cat <<EOF
+usage: scripts/test.sh [--all|--verbose|-v]
+
+By default, only failed calls and the summary are printed.
+Use --all, --verbose, or -v to print every call.
+EOF
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --all | --verbose | -v)
+      SHOW_ALL=1
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "error: unknown argument: $arg"
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+log_all() {
+  if [ "$SHOW_ALL" -eq 1 ]; then
+    echo "$@"
+  fi
+}
+
+record_pass() {
+  PASSED_COUNT=$((PASSED_COUNT + 1))
+  log_all "$@"
+}
+
+record_fail() {
+  FAILED=1
+  FAILED_COUNT=$((FAILED_COUNT + 1))
+  echo "$@"
+}
 
 if [ ! -x "$BIOME" ]; then
   echo "error: biome not found. run 'npm install' first."
@@ -21,12 +67,15 @@ test_fail() {
   output=$(cd "$ROOT" && "$BIOME" lint "$fixture" 2>&1 || true)
 
   if echo "$output" | grep -qF "$expected"; then
-    echo "  pass: $name (error detected)"
+    record_pass "  pass: $name (error detected)"
+    if [ "$SHOW_ALL" -eq 1 ]; then
+      echo "  output:"
+      echo "${output//$'\n'/$'\n'    }"
+    fi
   else
-    echo "  FAIL: $name -- expected message not found: $expected"
+    record_fail "  FAIL: $name -- expected message not found: $expected"
     echo "  output:"
     echo "${output//$'\n'/$'\n'    }"
-    FAILED=1
   fi
 }
 
@@ -37,57 +86,66 @@ test_pass() {
   local name
   name="$(basename "$fixture")"
 
-  if (cd "$ROOT" && "$BIOME" lint "$fixture") > /dev/null 2>&1; then
-    echo "  pass: $name (no errors)"
+  set +e
+  output=$(cd "$ROOT" && "$BIOME" lint "$fixture" 2>&1)
+  status=$?
+  set -e
+
+  if [ "$status" -eq 0 ]; then
+    record_pass "  pass: $name (no errors)"
+    if [ "$SHOW_ALL" -eq 1 ]; then
+      echo "  output:"
+      echo "${output//$'\n'/$'\n'    }"
+    fi
   else
-    output=$(cd "$ROOT" && "$BIOME" lint "$fixture" 2>&1 || true)
-    echo "  FAIL: $name -- expected no errors but got:"
+    record_fail "  FAIL: $name -- expected no errors but got:"
     echo "${output//$'\n'/$'\n'    }"
-    FAILED=1
   fi
 }
 
-echo "--- no-inline-imports ---"
+log_all "--- no-inline-imports ---"
 test_fail "tests/fail/no-inline-imports.tsx" "All imports should be at the top of the file"
 test_pass "tests/pass/no-inline-imports.tsx"
 
-echo "--- no-interpolated-classname ---"
+log_all "--- no-interpolated-classname ---"
 test_fail "tests/fail/no-interpolated-classname.tsx" "Use cn() instead of template literal in className"
 test_pass "tests/pass/no-interpolated-classname.tsx"
 
-echo "--- phosphor-icon-suffix ---"
+log_all "--- phosphor-icon-suffix ---"
 test_fail "tests/fail/phosphor-icon-suffix.tsx" "Phosphor icon imports require Icon suffix"
 test_pass "tests/pass/phosphor-icon-suffix.tsx"
 
-echo "--- no-js-import-extension ---"
+log_all "--- no-js-import-extension ---"
 test_fail "tests/fail/no-js-import-extension.tsx" "Remove the .js extension"
 test_pass "tests/pass/no-js-import-extension.tsx"
 
-echo "--- no-ts-import-extension ---"
+log_all "--- no-ts-import-extension ---"
 test_fail "tests/fail/no-ts-import-extension.tsx" "Remove the .ts extension"
 test_pass "tests/pass/no-ts-import-extension.tsx"
 
-echo "--- no-emojis ---"
+log_all "--- no-emojis ---"
 test_fail "tests/fail/no-emojis.tsx" "Emojis are not allowed in code"
 test_pass "tests/pass/no-emojis.tsx"
 
-echo "--- no-inner-types ---"
+log_all "--- no-inner-types ---"
 test_fail "tests/fail/no-inner-types.tsx" "Do not declare TypeScript types inside functions"
 test_pass "tests/pass/no-inner-types.tsx"
 
-echo "--- pi-no-node-exec ---"
+log_all "--- pi-no-node-exec ---"
 test_fail "tests/fail/pi-no-node-exec.tsx" "Do not use child_process directly"
 test_pass "tests/pass/pi-no-node-exec.tsx"
 
-echo "--- no-buried-await ---"
+log_all "--- no-buried-await ---"
 test_fail "tests/fail/no-buried-await.ts" "Do not bury await inside"
 test_pass "tests/pass/no-buried-await.ts"
 
-echo "--- no-empty-catch ---"
+log_all "--- no-empty-catch ---"
 test_fail "tests/fail/no-empty-catch.tsx" "Empty catch blocks are not allowed"
 test_pass "tests/pass/no-empty-catch.tsx"
 
 echo ""
+echo "Summary: $PASSED_COUNT passed, $FAILED_COUNT failed"
+
 if [ "$FAILED" -eq 1 ]; then
   echo "SOME TESTS FAILED"
   exit 1
