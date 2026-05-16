@@ -29,3 +29,19 @@ export async function hasSyntheticAuth(modelRegistry: ApiKeyRegistry): Promise<b
 
   return hasAuth;
 }
+
+function join(...parts: string[]): string {
+  return parts.join("/");
+}
+
+async function getLogDir(): Promise<string> {
+  return "logs";
+}
+
+export async function getLogPath(): Promise<string> {
+  return join(await getLogDir(), "provider-response-headers.json");
+}
+
+export async function getNestedLogPath(): Promise<string> {
+  return join("tmp", await getLogDir());
+}

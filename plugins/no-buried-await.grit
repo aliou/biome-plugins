@@ -1,10 +1,26 @@
 engine biome(1.0)
 language js(typescript,jsx)
 
-`(await $value)` as $awaited where {
-    register_diagnostic(
-        span = $awaited,
-        message = "Do not bury await inside parentheses. Await the value first, then use it in a separate expression.",
-        severity = "error"
-    )
+or {
+    `(await $value)` as $awaited where {
+        register_diagnostic(
+            span = $awaited,
+            message = "Do not bury await inside parentheses or call arguments. Await the value first, then use it in a separate expression.",
+            severity = "error"
+        )
+    },
+    `$_(await $value, $_)` as $awaited where {
+        register_diagnostic(
+            span = $awaited,
+            message = "Do not bury await inside parentheses or call arguments. Await the value first, then use it in a separate expression.",
+            severity = "error"
+        )
+    },
+    `$_($_, await $value)` as $awaited where {
+        register_diagnostic(
+            span = $awaited,
+            message = "Do not bury await inside parentheses or call arguments. Await the value first, then use it in a separate expression.",
+            severity = "error"
+        )
+    }
 }
