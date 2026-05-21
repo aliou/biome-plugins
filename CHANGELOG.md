@@ -1,5 +1,15 @@
 # @aliou/biome-plugins
 
+## 0.9.0
+
+### Minor Changes
+
+- ea5dab6: Catch await expressions buried directly inside call arguments.
+
+### Patch Changes
+
+- a53d66e: Fix pi-no-node-exec to flag multi-name child_process spawning imports while allowing non-spawning imports.
+
 ## 0.8.1
 
 ### Patch Changes
