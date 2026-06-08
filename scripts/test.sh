@@ -143,6 +143,10 @@ log_all "--- no-empty-catch ---"
 test_fail "tests/fail/no-empty-catch.tsx" "Empty catch blocks are not allowed"
 test_pass "tests/pass/no-empty-catch.tsx"
 
+log_all "--- no-homedir ---"
+test_fail "tests/fail/no-homedir.ts" "Do not use os.homedir()"
+test_pass "tests/pass/no-homedir.ts"
+
 echo ""
 echo "Summary: $PASSED_COUNT passed, $FAILED_COUNT failed"
 

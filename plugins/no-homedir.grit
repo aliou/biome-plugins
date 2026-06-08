@@ -1,0 +1,61 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    `import { $a } from $source` where {
+        $source <: or { `"os"`, `"node:os"` },
+        $a <: r"^(?:homedir|userInfo)(?:\s+as\s+\w+)?$",
+        register_diagnostic(
+            span = $a,
+            message = "Do not use os.homedir() or os.userInfo(). Use a configured paths utility instead.",
+            severity = "error"
+        )
+    },
+    `import { $a, $b } from $source` where {
+        $source <: or { `"os"`, `"node:os"` },
+        $a <: r"^(?:homedir|userInfo)(?:\s+as\s+\w+)?$",
+        register_diagnostic(
+            span = $a,
+            message = "Do not use os.homedir() or os.userInfo(). Use a configured paths utility instead.",
+            severity = "error"
+        )
+    },
+    `import { $a, $b } from $source` where {
+        $source <: or { `"os"`, `"node:os"` },
+        $b <: r"^(?:homedir|userInfo)(?:\s+as\s+\w+)?$",
+        register_diagnostic(
+            span = $b,
+            message = "Do not use os.homedir() or os.userInfo(). Use a configured paths utility instead.",
+            severity = "error"
+        )
+    },
+    `import { $a, $b, $c } from $source` where {
+        $source <: or { `"os"`, `"node:os"` },
+        $a <: r"^(?:homedir|userInfo)(?:\s+as\s+\w+)?$",
+        register_diagnostic(span = $a, message = "Do not use os.homedir() or os.userInfo(). Use a configured paths utility instead.", severity = "error")
+    },
+    `import { $a, $b, $c } from $source` where {
+        $source <: or { `"os"`, `"node:os"` },
+        $b <: r"^(?:homedir|userInfo)(?:\s+as\s+\w+)?$",
+        register_diagnostic(span = $b, message = "Do not use os.homedir() or os.userInfo(). Use a configured paths utility instead.", severity = "error")
+    },
+    `import { $a, $b, $c } from $source` where {
+        $source <: or { `"os"`, `"node:os"` },
+        $c <: r"^(?:homedir|userInfo)(?:\s+as\s+\w+)?$",
+        register_diagnostic(span = $c, message = "Do not use os.homedir() or os.userInfo(). Use a configured paths utility instead.", severity = "error")
+    },
+    `process.env.HOME` as $node where {
+        register_diagnostic(
+            span = $node,
+            message = "Do not read process.env.HOME directly. Use a configured paths utility instead.",
+            severity = "error"
+        )
+    },
+    `process.env["HOME"]` as $node where {
+        register_diagnostic(
+            span = $node,
+            message = "Do not read process.env.HOME directly. Use a configured paths utility instead.",
+            severity = "error"
+        )
+    }
+}
