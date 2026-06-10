@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.10.0
+
+### Minor Changes
+
+- 52e1735: Add no-homedir plugin: disallows importing `homedir`/`userInfo` from `os`/`node:os` and reading `process.env.HOME`
+
 ## 0.9.0
 
 ### Minor Changes
