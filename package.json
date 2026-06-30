@@ -24,7 +24,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.12",
+    "@biomejs/biome": "^2.5.1",
     "@changesets/cli": "^2.29.8"
   },
   "peerDependencies": {
