@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.11.0
+
+### Minor Changes
+
+- b43613d: Add no-is-record plugin to disallow creating `isRecord` function helpers.
+
 ## 0.10.0
 
 ### Minor Changes
