@@ -11,7 +11,8 @@
     "plugins/pi-no-node-exec.grit",
     "plugins/no-buried-await.grit",
     "plugins/no-empty-catch.grit",
-    "plugins/no-homedir.grit"
+    "plugins/no-homedir.grit",
+    "plugins/no-is-record.grit"
   ],
   "linter": {
     "enabled": true,

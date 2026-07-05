@@ -147,6 +147,10 @@ log_all "--- no-homedir ---"
 test_fail "tests/fail/no-homedir.ts" "Do not use os.homedir()"
 test_pass "tests/pass/no-homedir.ts"
 
+log_all "--- no-is-record ---"
+test_fail "tests/fail/no-is-record.ts" "Do not create isRecord() helpers"
+test_pass "tests/pass/no-is-record.ts"
+
 echo ""
 echo "Summary: $PASSED_COUNT passed, $FAILED_COUNT failed"
 

@@ -81,3 +81,4 @@ AGENTS.md          -- This file (context for coding agents)
 | `no-buried-await` | Disallows burying `await` inside parentheses or call arguments. Await the value first, then use it in a separate expression. |
 | `no-empty-catch` | Disallows empty `catch` blocks. Catch blocks must contain actual code, not only comments. |
 | `no-homedir` | Disallows importing `os.homedir`/`os.userInfo` and reading `process.env.HOME`. Use a configured paths utility instead. |
+| `no-is-record` | Disallows creating `isRecord` function helpers. Use explicit types or schema-specific validation instead. |
