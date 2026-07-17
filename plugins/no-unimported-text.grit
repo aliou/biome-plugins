@@ -1,0 +1,82 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    or {
+        `<Text $attrs />` as $element,
+        `<Text $attrs>$children</Text>` as $element,
+        `<$component $attrs />` as $element where {
+            $component <: r"^Text\..*"
+        },
+        `<$component $attrs>$children</$component>` as $element where {
+            $component <: r"^Text\..*"
+        },
+        JsIdentifierExpression(name = $name) as $element where {
+            $name <: `Text`
+        },
+        TsReferenceType(name = $name) as $element where {
+            $name <: `Text`
+        }
+    } where {
+        not $program <: contains or {
+            JsImportDefaultClause(default_specifier = JsDefaultImportSpecifier(local_name = $name)) as $clause where {
+                $name <: `Text`,
+                $clause <: not r"^\s*type\s+.*"
+            },
+            JsImportNamespaceClause(namespace_specifier = JsNamespaceImportSpecifier(local_name = $name)) as $clause where {
+                $name <: `Text`,
+                $clause <: not r"^\s*type\s+.*"
+            },
+            JsImportNamedClause(named_specifiers = $specifiers) as $clause where {
+                $clause <: not r"^\s*type\s+.*",
+                $specifiers <: contains or {
+                    JsShorthandNamedImportSpecifier(local_name = $name) as $specifier where {
+                        $name <: `Text`,
+                        $specifier <: not r"^\s*type\s+.*"
+                    },
+                    JsNamedImportSpecifier(local_name = $name) as $specifier where {
+                        $name <: `Text`,
+                        $specifier <: not r"^\s*type\s+.*"
+                    }
+                }
+            },
+            JsImportCombinedClause(default_specifier = JsDefaultImportSpecifier(local_name = $name)) where {
+                $name <: `Text`
+            },
+            JsImportCombinedClause(specifier = JsNamespaceImportSpecifier(local_name = $name)) where {
+                $name <: `Text`
+            },
+            JsImportCombinedClause(specifier = $specifiers) where {
+                $specifiers <: contains or {
+                    JsShorthandNamedImportSpecifier(local_name = $name) as $specifier where {
+                        $name <: `Text`,
+                        $specifier <: not r"^\s*type\s+.*"
+                    },
+                    JsNamedImportSpecifier(local_name = $name) as $specifier where {
+                        $name <: `Text`,
+                        $specifier <: not r"^\s*type\s+.*"
+                    }
+                }
+            }
+        },
+        register_diagnostic(
+            span = $element,
+            message = "Text must come from a runtime import. The DOM Text global may be hiding a missing component import.",
+            severity = "error"
+        )
+    },
+    or {
+        JsIdentifierBinding() as $declaration where {
+            $declaration <: not within JsImport()
+        },
+        TsTypeAliasDeclaration(binding_identifier = $declaration),
+        TsInterfaceDeclaration(id = $declaration)
+    } where {
+        $declaration <: r"^Text$",
+        register_diagnostic(
+            span = $declaration,
+            message = "Text must come from a runtime import. Do not declare a local Text binding.",
+            severity = "error"
+        )
+    }
+}

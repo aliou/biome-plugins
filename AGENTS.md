@@ -82,3 +82,4 @@ AGENTS.md          -- This file (context for coding agents)
 | `no-empty-catch` | Disallows empty `catch` blocks. Catch blocks must contain actual code, not only comments. |
 | `no-homedir` | Disallows importing `os.homedir`/`os.userInfo` and reading `process.env.HOME`. Use a configured paths utility instead. |
 | `no-is-record` | Disallows creating `isRecord` function helpers. Use explicit types or schema-specific validation instead. |
+| `no-unimported-text` | Requires `Text` references, including type annotations, `new Text()`, and `<Text>`, to have a runtime import binding. Prevents accidental use of the DOM `Text` global. |

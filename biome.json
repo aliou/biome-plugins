@@ -12,7 +12,8 @@
     "plugins/no-buried-await.grit",
     "plugins/no-empty-catch.grit",
     "plugins/no-homedir.grit",
-    "plugins/no-is-record.grit"
+    "plugins/no-is-record.grit",
+    "plugins/no-unimported-text.grit"
   ],
   "linter": {
     "enabled": true,
