@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.12.0
+
+### Minor Changes
+
+- ca778e9: Add a plugin that requires `Text` references to have a runtime import binding.
+
 ## 0.11.0
 
 ### Minor Changes
