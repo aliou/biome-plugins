@@ -1,5 +1,26 @@
 # @aliou/biome-plugins
 
+## 0.13.0
+
+### Minor Changes
+
+- 0e03f8d: Add eight plugins ported from [anti-slop](https://github.com/dmmulroy/anti-slop):
+
+  - `no-chained-type-assertions`
+  - `no-conditional-empty-object-spread`
+  - `no-reflect-apply`
+  - `no-reflect-get`
+  - `no-runtime-typeof`
+  - `no-unknown-parameters`
+  - `no-unknown-returns`
+  - `no-unsafe-dictionary-type`
+
+- fa85649: Rewrite and rename the bundled skills for Biome 2.5: `writing-gritql-plugins` (was `biome-gritql-plugins`) covers JSON target language, `fix_kind`/`=>` rewrites, suppressions, and includes-scoped plugin entries, plus recipes techniques (`$...` spread, `as $match` unification, CST field matching). `setting-up-biome-plugins` (was `biome-plugins-setup`) adds an audit-first adoption workflow and a full plugin relevance table.
+
+### Patch Changes
+
+- 0f33238: Add the 8 anti-slop-derived plugins to the `setting-up-biome-plugins` skill's relevance table, and document GritQL gotchas found while writing them (non-capturing regex groups, full-text regex matching, `contains` over-matching into nested fields, inconsistent return-type field names) in the `writing-gritql-plugins` skill.
+
 ## 0.12.0
 
 ### Minor Changes
