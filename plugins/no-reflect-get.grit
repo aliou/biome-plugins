@@ -1,0 +1,10 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+`Reflect.get($obj, $key, $...)` as $call where {
+    register_diagnostic(
+        span = $call,
+        message = "Replace `Reflect.get` with typed property access. Parse dynamic input into a named domain type before reading it.",
+        severity = "error"
+    )
+}

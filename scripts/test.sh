@@ -175,6 +175,38 @@ test_pass "tests/pass/no-unimported-text-earendil-pi-tui.ts"
 test_pass "tests/pass/no-unimported-text-namespace.tsx"
 test_pass "tests/pass/no-unimported-text-pi-tui.ts"
 
+log_all "--- no-chained-type-assertions ---"
+test_fail "tests/fail/no-chained-type-assertions.ts" "Chained type assertions discard type evidence"
+test_pass "tests/pass/no-chained-type-assertions.ts"
+
+log_all "--- no-conditional-empty-object-spread ---"
+test_fail "tests/fail/no-conditional-empty-object-spread.ts" "This conditional spread hides property omission"
+test_pass "tests/pass/no-conditional-empty-object-spread.ts"
+
+log_all "--- no-reflect-apply ---"
+test_fail "tests/fail/no-reflect-apply.ts" "with a typed function call"
+test_pass "tests/pass/no-reflect-apply.ts"
+
+log_all "--- no-reflect-get ---"
+test_fail "tests/fail/no-reflect-get.ts" "with typed property access"
+test_pass "tests/pass/no-reflect-get.ts"
+
+log_all "--- no-runtime-typeof ---"
+test_fail "tests/fail/no-runtime-typeof.ts" "narrows a representation without establishing its contract"
+test_pass "tests/pass/no-runtime-typeof.ts"
+
+log_all "--- no-unknown-parameters ---"
+test_fail "tests/fail/no-unknown-parameters.ts" "leaves input unparsed"
+test_pass "tests/pass/no-unknown-parameters.ts"
+
+log_all "--- no-unknown-returns ---"
+test_fail "tests/fail/no-unknown-returns.ts" "to its caller"
+test_pass "tests/pass/no-unknown-returns.ts"
+
+log_all "--- no-unsafe-dictionary-type ---"
+test_fail "tests/fail/no-unsafe-dictionary-type.ts" "requires re-validating every access"
+test_pass "tests/pass/no-unsafe-dictionary-type.ts"
+
 echo ""
 echo "Summary: $PASSED_COUNT passed, $FAILED_COUNT failed"
 

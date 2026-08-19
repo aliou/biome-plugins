@@ -1,13 +1,16 @@
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+// Updated for the schema-first rules: validate with typebox instead of
+// hand-rolled narrowing helpers.
+import { Type, type Static } from "typebox";
+import { Value } from "typebox/value";
 
-const parsePayload = (value: unknown): Record<string, unknown> | undefined => {
-  if (!isPlainObject(value)) {
-    return undefined;
-  }
+const PayloadSchema = Type.Object({
+  command: Type.String(),
+  args: Type.Array(Type.String()),
+});
+type Payload = Static<typeof PayloadSchema>;
 
-  return value;
+const parsePayload = (value: object): Payload | undefined => {
+  return Value.Check(PayloadSchema, value) ? (value as Payload) : undefined;
 };
 
 export { parsePayload };

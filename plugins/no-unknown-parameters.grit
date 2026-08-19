@@ -1,0 +1,23 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    JsFormalParameter() as $param where {
+        $param <: r"^[\s\S]*:\s*unknown(?:\s*=[\s\S]*)?\s*$",
+        not $param <: r"^\s*cause\b[\s\S]*$",
+        register_diagnostic(
+            span = $param,
+            message = "A parameter typed `unknown` leaves input unparsed. Accept a named domain type and validate external input with a schema at its I/O boundary before calling this function.",
+            severity = "error"
+        )
+    },
+    JsRestParameter() as $param where {
+        $param <: r"^\s*\.\.\.[\w$]+\s*:\s*unknown(?:\s*=[\s\S]*)?\s*$",
+        not $param <: r"^\s*\.\.\.cause\b[\s\S]*$",
+        register_diagnostic(
+            span = $param,
+            message = "A parameter typed `unknown` leaves input unparsed. Accept a named domain type and validate external input with a schema at its I/O boundary before calling this function.",
+            severity = "error"
+        )
+    }
+}

@@ -1,0 +1,27 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    TsReferenceType() as $ref where {
+        $ref <: r"^Record\s*<\s*(?:string|number|symbol|PropertyKey)(?:\s*\|\s*(?:string|number|symbol|PropertyKey))*\s*,\s*(?:(?:unknown|any|object)\b|\{\s*\})[^<>]*>\s*$",
+        register_diagnostic(
+            span = $ref,
+            message = "A dictionary with unsafe values requires re-validating every access. Use a named value type parsed with a schema instead of `Record<..., unknown/any/object/{}>`.",
+            severity = "error"
+        )
+    },
+    TsIndexSignatureTypeMember(type_annotation = $ann) as $sig where {
+        $sig <: r"^\s*(?:readonly\s+)?\[\s*[\w$]+\s*:\s*(?:string|number|symbol)(?:\s*\|\s*(?:string|number|symbol))*\s*\]\s*:[\s\S]*$",
+        $ann <: or {
+            r"^\s*:\s*unknown\s*$",
+            r"^\s*:\s*any\s*$",
+            r"^\s*:\s*object\s*$",
+            r"^\s*:\s*\{\s*\}\s*$"
+        },
+        register_diagnostic(
+            span = $sig,
+            message = "An index signature with unsafe values requires re-validating every access. Use a named value type parsed with a schema instead of `{ [key: string]: unknown/any/object }`.",
+            severity = "error"
+        )
+    }
+}

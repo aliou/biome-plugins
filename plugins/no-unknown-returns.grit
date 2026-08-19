@@ -1,0 +1,45 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    or {
+        JsFunctionDeclaration(return_type_annotation = $rt),
+        JsFunctionExportDefaultDeclaration(return_type_annotation = $rt),
+        JsFunctionExpression(return_type_annotation = $rt),
+        JsArrowFunctionExpression(return_type_annotation = $rt),
+        JsMethodObjectMember(return_type_annotation = $rt),
+        JsMethodClassMember(return_type_annotation = $rt),
+        TsMethodSignatureClassMember(return_type_annotation = $rt),
+        TsDeclareFunctionDeclaration(return_type_annotation = $rt),
+        TsCallSignatureTypeMember(return_type_annotation = $rt),
+        TsMethodSignatureTypeMember(return_type_annotation = $rt),
+        JsGetterObjectMember(return_type = $rt),
+        JsGetterClassMember(return_type = $rt),
+        TsGetterSignatureClassMember(return_type = $rt),
+        TsGetterSignatureTypeMember(type_annotation = $rt)
+    } where {
+        $rt <: or {
+            r"^\s*:\s*unknown\s*$",
+            r"^\s*:\s*Promise(?:Like)?\s*<\s*unknown\s*>\s*$"
+        },
+        register_diagnostic(
+            span = $rt,
+            message = "This function exposes `unknown` to its caller. Parse the value at its boundary with a schema and return a named domain type.",
+            severity = "error"
+        )
+    },
+    or {
+        TsFunctionType(return_type = $rt),
+        TsConstructorType(return_type = $rt)
+    } where {
+        $rt <: or {
+            r"^\s*unknown\s*$",
+            r"^\s*Promise(?:Like)?\s*<\s*unknown\s*>\s*$"
+        },
+        register_diagnostic(
+            span = $rt,
+            message = "This function exposes `unknown` to its caller. Parse the value at its boundary with a schema and return a named domain type.",
+            severity = "error"
+        )
+    }
+}

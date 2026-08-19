@@ -1,0 +1,29 @@
+engine biome(1.0)
+language js(typescript,jsx)
+
+or {
+    or {
+        `$_ as $t1 as $t2` as $chain,
+        `($_ as $t1) as $t2` as $chain
+    } where {
+        or { $t1 <: not r"^\s*const\s*$", $t2 <: not r"^\s*const\s*$" },
+        register_diagnostic(
+            span = $chain,
+            message = "Chained type assertions discard type evidence. Keep the original precise type, or parse untrusted input into a named type at its boundary.",
+            severity = "error"
+        )
+    },
+    or {
+        TsTypeAssertionExpression(expression = TsTypeAssertionExpression()) as $chain,
+        TsTypeAssertionExpression(expression = JsParenthesizedExpression(expression = TsTypeAssertionExpression())) as $chain,
+        TsAsExpression(expression = TsTypeAssertionExpression()) as $chain,
+        TsAsExpression(expression = JsParenthesizedExpression(expression = TsTypeAssertionExpression())) as $chain,
+        TsTypeAssertionExpression(expression = JsParenthesizedExpression(expression = TsAsExpression())) as $chain
+    } where {
+        register_diagnostic(
+            span = $chain,
+            message = "Chained type assertions discard type evidence. Keep the original precise type, or parse untrusted input into a named type at its boundary.",
+            severity = "error"
+        )
+    }
+}

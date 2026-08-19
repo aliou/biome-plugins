@@ -13,7 +13,15 @@
 		"plugins/no-empty-catch.grit",
 		"plugins/no-homedir.grit",
 		"plugins/no-is-record.grit",
-		"plugins/no-unimported-text.grit"
+		"plugins/no-unimported-text.grit",
+		"plugins/no-chained-type-assertions.grit",
+		"plugins/no-conditional-empty-object-spread.grit",
+		"plugins/no-reflect-apply.grit",
+		"plugins/no-reflect-get.grit",
+		"plugins/no-runtime-typeof.grit",
+		"plugins/no-unknown-parameters.grit",
+		"plugins/no-unknown-returns.grit",
+		"plugins/no-unsafe-dictionary-type.grit"
 	],
 	"linter": {
 		"enabled": true,

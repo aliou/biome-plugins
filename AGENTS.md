@@ -110,3 +110,11 @@ skills/            -- Agent skills (writing-gritql-plugins, setting-up-biome-plu
 | `no-homedir` | Disallows importing `os.homedir`/`os.userInfo` and reading `process.env.HOME`. Use a configured paths utility instead. |
 | `no-is-record` | Disallows creating `isRecord` function helpers. Use explicit types or schema-specific validation instead. |
 | `no-unimported-text` | Requires `Text` references, including type annotations, `new Text()`, and `<Text>`, to have a runtime import binding. Prevents accidental use of the DOM `Text` global. |
+| `no-chained-type-assertions` | Disallows chained `as`/angle-bracket type assertions (e.g. `x as unknown as User`), except chains made only of `as const`. |
+| `no-conditional-empty-object-spread` | Disallows spreading a conditional that uses `{}` on one branch to omit fields (e.g. `{ ...(cond ? { x } : {}) }`). |
+| `no-reflect-apply` | Disallows `Reflect.apply()`. Call the typed function directly or model dynamic dispatch behind a named interface. |
+| `no-reflect-get` | Disallows `Reflect.get()`. Use typed property access, or parse dynamic input into a named domain type first. |
+| `no-runtime-typeof` | Disallows `typeof` checks. Parse input with a schema at its I/O boundary instead of narrowing ad hoc. |
+| `no-unknown-parameters` | Disallows function parameters typed `unknown`, except a parameter named `cause`. |
+| `no-unknown-returns` | Disallows function return types of `unknown`, `Promise<unknown>`, or `PromiseLike<unknown>`. |
+| `no-unsafe-dictionary-type` | Disallows dictionary types with unsafe values: `Record<string, unknown/any/object/{}>` and equivalent index signatures. |
