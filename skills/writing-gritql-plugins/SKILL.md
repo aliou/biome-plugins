@@ -214,6 +214,13 @@ Plugin diagnostics appear with the `plugin` category in output.
 - No automatic npm package resolution (must use relative paths).
 - Still experimental; some GritQL features are missing (tracking: [biomejs/biome#2582](https://github.com/biomejs/biome/issues/2582)).
 
+## Gotchas found in practice
+
+- **No capturing groups in regex.** `r"(unknown|any)"` fails to compile with `regex pattern matched N variables, but expected 0` -- Grit treats a capturing group as an unnamed variable binding. Use non-capturing groups: `r"(?:unknown|any)"`.
+- **Regex is a full-text match, not a search.** A pattern like `r"^\s*cause\b"` used in a `not` condition to exempt a case looks like "starts with cause", but the regex must match the ENTIRE node text -- against real parameter text like `cause: unknown` it never matches, so the exemption silently never fires. Anchor to the whole shape instead: `r"^\s*cause\b[\s\S]*$"`. The same trap applies to positive matches: `r":\s*unknown$"` misses `value: unknown = fallback` because the node's full text continues past `unknown`; account for optional trailing syntax (`(?:\s*=[\s\S]*)?`) or the match fails on every case that has one.
+- **`contains` searches every descendant, not just direct children.** `$sig <: contains TsUnknownType()` on an index signature also matches `unknown` nested arbitrarily deep in the value type (`{ [k: string]: { nested: unknown } }`), a false positive when the rule should only care about the direct value type. Bind the specific field instead and test its own text or shape: `TsIndexSignatureTypeMember(type_annotation = $ann) where { $ann <: r"^\s*:\s*unknown\s*$" }`.
+- **Field names for structurally similar positions differ across node kinds.** Return-type annotations aren't one shape: most function-like nodes use `return_type_annotation: TsReturnTypeAnnotation?` (node text includes the leading `:`), but `TsFunctionType`/`TsConstructorType` use `return_type: AnyTsReturnType` directly (no colon in the text), getters (`JsGetterObjectMember`, `JsGetterClassMember`, `TsGetterSignatureClassMember`) use `return_type: TsTypeAnnotation?`, and `TsGetterSignatureTypeMember` uses `type_annotation: TsTypeAnnotation?` instead. Check the field name and text shape per node kind rather than assuming consistency across similar-looking nodes; `js.ungram` in the Biome repo is the source of truth when the Playground syntax tree doesn't make a field name obvious.
+
 ## After creating a plugin
 
 Update the plugin table in the following files so they stay in sync:

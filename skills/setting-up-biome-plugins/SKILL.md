@@ -20,6 +20,8 @@ Example greps:
 grep -rn "await import(\|require(" src/          # no-inline-imports
 grep -rn "process.env.HOME\|from \"os\"" src/    # no-homedir
 grep -rn "@phosphor-icons/react" src/            # phosphor-icon-suffix (any hits at all?)
+grep -rn "typeof .* ===\|typeof .* !==" src/     # no-runtime-typeof
+grep -rn "Record<[a-zA-Z ,]*, *\(unknown\|any\|object\)>" src/  # no-unsafe-dictionary-type
 ```
 
 If a plugin's subject does not exist in the codebase (no Phosphor imports, no `child_process`), do not register it.
@@ -41,8 +43,18 @@ If a plugin's subject does not exist in the codebase (no Phosphor imports, no `c
 | `no-homedir` | Disallows `os.homedir`/`os.userInfo` imports and `process.env.HOME`; use a configured paths utility instead. | Projects that have a paths utility to point to. |
 | `no-is-record` | Disallows `isRecord()` helper functions. | TypeScript projects validating objects with explicit types or schemas. |
 | `no-unimported-text` | Requires `Text` references to have a runtime import binding. | Projects rendering a `Text` component from a TUI library (pi/ink). Guards against the DOM `Text` global. |
+| `no-chained-type-assertions` | Disallows chained `as`/angle-bracket type assertions (e.g. `x as unknown as User`), except chains made only of `as const`. | TypeScript projects rejecting assertion chains that discard type evidence. |
+| `no-conditional-empty-object-spread` | Disallows spreading a conditional that uses `{}` on one branch to omit fields (e.g. `{ ...(cond ? { x } : {}) }`). | Any project building option/config objects with conditional spreads. |
+| `no-reflect-apply` | Disallows `Reflect.apply()`. | Any project. Rarely used deliberately; catches accidental or generated dynamic-dispatch code. |
+| `no-reflect-get` | Disallows `Reflect.get()`. | Any project. Same as above, for dynamic property access. |
+| `no-runtime-typeof` | Disallows `typeof` checks. | TypeScript projects that parse external input with a schema library (typebox, zod) at I/O boundaries. |
+| `no-unknown-parameters` | Disallows function parameters typed `unknown`, except a parameter named `cause`. | TypeScript projects enforcing schema validation at boundaries instead of `unknown` escape hatches. |
+| `no-unknown-returns` | Disallows function return types of `unknown`, `Promise<unknown>`, or `PromiseLike<unknown>`. | Same as `no-unknown-parameters`; usually adopted together. |
+| `no-unsafe-dictionary-type` | Disallows dictionary types with unsafe values: `Record<string, unknown/any/object/{}>` and equivalent index signatures. | Same as `no-unknown-parameters`; usually adopted together. |
 
 All plugins register diagnostics with severity `error`.
+
+`no-runtime-typeof`, `no-unknown-parameters`, `no-unknown-returns`, and `no-unsafe-dictionary-type` are a schema-boundary group: they push a project toward parsing external input with a schema library instead of ad hoc narrowing. They match direct syntactic forms only -- no local type-alias resolution, no distinguishing a genuine parsing boundary from an `unknown` escape hatch. Expect them to flag existing schema-parser code you want to keep (a function that legitimately takes `value: unknown` and validates it) alongside real violations; adopt with `includes` scoping per package if migrating incrementally.
 
 ## Step 3: Install
 
