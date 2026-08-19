@@ -1,24 +1,24 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.12/schema.json",
-  "plugins": [
-    "plugins/no-inline-imports.grit",
-    "plugins/no-interpolated-classname.grit",
-    "plugins/phosphor-icon-suffix.grit",
-    "plugins/no-js-import-extension.grit",
-    "plugins/no-ts-import-extension.grit",
-    "plugins/no-emojis.grit",
-    "plugins/no-inner-types.grit",
-    "plugins/pi-no-node-exec.grit",
-    "plugins/no-buried-await.grit",
-    "plugins/no-empty-catch.grit",
-    "plugins/no-homedir.grit",
-    "plugins/no-is-record.grit",
-    "plugins/no-unimported-text.grit"
-  ],
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": false
-    }
-  }
+	"$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
+	"plugins": [
+		"plugins/no-inline-imports.grit",
+		"plugins/no-interpolated-classname.grit",
+		"plugins/phosphor-icon-suffix.grit",
+		"plugins/no-js-import-extension.grit",
+		"plugins/no-ts-import-extension.grit",
+		"plugins/no-emojis.grit",
+		"plugins/no-inner-types.grit",
+		"plugins/pi-no-node-exec.grit",
+		"plugins/no-buried-await.grit",
+		"plugins/no-empty-catch.grit",
+		"plugins/no-homedir.grit",
+		"plugins/no-is-record.grit",
+		"plugins/no-unimported-text.grit"
+	],
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"preset": "none"
+		}
+	}
 }
