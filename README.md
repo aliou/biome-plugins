@@ -16,6 +16,7 @@ Custom Biome lint rules written as GritQL plugins.
 | `pi-no-node-exec` | Disallows importing from `child_process` / `node:child_process` in [pi](https://pi.dev) extensions. Use `pi.exec()` from the ExtensionAPI instead. |
 | `no-buried-await` | Disallows burying `await` inside parentheses or call arguments. Await the value first, then use it in a separate expression. |
 | `no-empty-catch` | Disallows empty `catch` blocks. Catch blocks must contain actual code, not only comments. |
+| `no-homedir` | Disallows importing `os.homedir`/`os.userInfo` and reading `process.env.HOME`. Use a configured paths utility instead. |
 | `no-is-record` | Disallows creating `isRecord` function helpers. Use explicit types or schema-specific validation instead. |
 | `no-unimported-text` | Requires `Text` references, including type annotations, `new Text()`, and `<Text>`, to have a runtime import binding. Prevents accidental use of the DOM `Text` global. |
 
@@ -47,7 +48,20 @@ Reference the plugins you want in your `biome.json` using relative paths to `nod
 }
 ```
 
-Pick only the ones you need. Each plugin is a standalone `.grit` file.
+Pick only the ones you need -- each plugin is a standalone `.grit` file, and several only apply to specific stacks (for example `phosphor-icon-suffix` only in projects using Phosphor icons, `pi-no-node-exec` only in [pi](https://pi.dev) extension projects). Audit your codebase first: register a plugin because it fires on real code, not by default.
+
+To scope a plugin to specific files, use the object form with `includes` globs (requires Biome >= 2.5):
+
+```json
+{
+  "plugins": [
+    {
+      "path": "./node_modules/@aliou/biome-plugins/plugins/pi-no-node-exec.grit",
+      "includes": ["extensions/**/*.ts"]
+    }
+  ]
+}
+```
 
 ### 3. Run
 
@@ -56,6 +70,8 @@ Plugin diagnostics show up when running `biome lint` or `biome check` as usual:
 ```bash
 biome check .
 ```
+
+To suppress a plugin diagnostic, use a suppression comment with the `plugin` category: `// biome-ignore lint/plugin: reason`.
 
 ## Limitations
 

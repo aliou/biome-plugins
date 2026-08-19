@@ -22,8 +22,8 @@ engine biome(1.0)
 language js(jsx)
 ```
 
-- `engine biome(1.0)` tells Biome this is a Biome-compatible GritQL pattern.
-- `language` sets the target language. Use `js`, `js(jsx)`, `js(typescript)`, `js(typescript,jsx)`, or `css`. Only JavaScript and CSS are supported.
+- `engine biome(1.0)` tells GritQL to use Biome's syntax tree (not Tree-sitter's).
+- `language` sets the target language. Use `js`, `js(jsx)`, `js(typescript)`, `js(typescript,jsx)`, `css`, or `json`. JavaScript, CSS, and JSON are supported.
 
 After the headers, the file contains one or more patterns with conditions and diagnostic registration.
 
@@ -31,28 +31,54 @@ After the headers, the file contains one or more patterns with conditions and di
 
 Biome extends GritQL with one function:
 
-- `register_diagnostic(span, message, severity)` -- registers a diagnostic when the pattern matches.
+- `register_diagnostic(span, message, severity, fix_kind)` -- registers a diagnostic when the pattern matches.
   - `span` (required): the AST node to underline in the diagnostic output.
   - `message` (required): the message to display.
   - `severity` (optional): `"error"` (default), `"warn"`, `"info"`, or `"hint"`.
+  - `fix_kind` (optional): `"safe"` or `"unsafe"` (default). Only relevant when the pattern also registers a rewrite with `=>`. Safe rewrites apply with `biome check --write`; unsafe rewrites require `--write --unsafe`.
+
+Plugins can also register code fixes with the rewrite operator `` $node => `replacement` `` inside a `where` block. The replacement must be built structurally from captured metavariables. Biome's Grit engine supports no `let` bindings and no string functions (`replace`, `substring`, ...), and metavariables inside string literals never match, so fixes that require computing a new string (for example stripping a `.js` suffix from an import path) cannot be expressed today.
+
+Plugin diagnostics can be suppressed with `// biome-ignore lint/plugin: reason` comments.
+
+## Plugin configuration
+
+In `biome.json`, a plugin entry is either a path string or an object:
+
+```json
+{
+  "plugins": [
+    "./plugins/no-emojis.grit",
+    { "path": "./plugins/pi-no-node-exec.grit", "includes": ["extensions/**/*.ts"] }
+  ]
+}
+```
+
+`includes` takes glob patterns (negated with `!`) and scopes the plugin to matching files (Biome >= 2.5).
+
+There is no way to pass options or variables into a `.grit` file -- no severity override, no banned-name lists, nothing. Values must be hardcoded in the pattern (see [biomejs/biome#10928](https://github.com/biomejs/biome/issues/10928)). To approximate per-project configuration, fork the `.grit` file or generate it from a template.
 
 ## Key GritQL concepts
 
 - **Code snippets**: backtick-wrapped source code that matches structurally (ignoring formatting). Example: `` `console.log($msg)` ``
-- **Metavariables**: `$name` captures an AST node. `$_` is a wildcard. Same variable used twice must match the same code.
+- **Metavariables**: `$name` captures an AST node. `$_` is a wildcard. `$...` is the spread metavariable (matches zero or more arguments). Same variable used twice must match the same code.
 - **Match operator** (`<:`): tests if a variable matches a pattern. Example: `$method <: "log"`
 - **`contains`**: searches descendants for a pattern.
-- **`or { ... }`**: matches any of several patterns.
+- **`or { ... }`**: matches any of several patterns. Unify arms with the same `as $match` variable so a shared `where` clause can reference them.
 - **`not`**: negates a condition.
-- **Regex**: `r"pattern"` for regex matching against captured text.
-- **Named nodes**: Biome AST node types in PascalCase (e.g. `JsTemplateExpression`, `JsxAttribute`, `JsIfStatement`). Discover them via the [Biome Playground](https://biomejs.dev/playground/) syntax tree view.
+- **Regex**: `r"pattern"` for regex matching against captured text (full node text, including quotes).
+- **Named nodes**: Biome AST node types in PascalCase (e.g. `JsTemplateExpression`, `JsxAttribute`, `JsIfStatement`), with nested field matching for structural constraints (e.g. `JsCatchClause(body = JsBlockStatement(statements = []))`). Discover them via the [Biome Playground](https://biomejs.dev/playground/) Syntax tab.
+
+See the `writing-gritql-plugins` and `setting-up-biome-plugins` skills under `skills/` for authoring and adoption workflows.
 
 ## References
 
 - Official docs: https://biomejs.dev/linter/plugins
+- Plugin recipes: https://biomejs.dev/recipes/gritql-plugins
 - GritQL reference: https://biomejs.dev/reference/gritql
 - GritQL language docs: https://docs.grit.io/language/overview
 - Plugin distribution discussion: https://github.com/biomejs/biome/discussions/6265
+- Plugins RFC (GritQL + JS/TS plugins): https://github.com/biomejs/biome/discussions/1762
 - Feature tracking: https://github.com/biomejs/biome/issues/2582
 
 ## Repository layout
@@ -64,6 +90,7 @@ tests/pass/        -- Fixture files that must pass cleanly
 scripts/test.sh    -- Test runner (pnpm test)
 README.md          -- Usage instructions for consumers
 AGENTS.md          -- This file (context for coding agents)
+skills/            -- Agent skills (writing-gritql-plugins, setting-up-biome-plugins)
 ```
 
 ## Plugins
