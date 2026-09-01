@@ -207,6 +207,10 @@ log_all "--- no-unsafe-dictionary-type ---"
 test_fail "tests/fail/no-unsafe-dictionary-type.ts" "requires re-validating every access"
 test_pass "tests/pass/no-unsafe-dictionary-type.ts"
 
+log_all "--- no-left-border-accent ---"
+test_fail "tests/fail/no-left-border-accent.css" "accent stripe"
+test_pass "tests/pass/no-left-border-accent.css"
+
 echo ""
 echo "Summary: $PASSED_COUNT passed, $FAILED_COUNT failed"
 

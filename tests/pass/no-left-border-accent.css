@@ -1,0 +1,36 @@
+/* The `blockquote` element is the canonical left-border use, at any width
+ * and in any selector form. Exempt, not flagged. */
+blockquote                              { border-left: 2px solid var(--rule); padding-left: 1.1rem; }
+blockquote                              { border-left: 3px solid var(--mdQuoteBorder); padding-left: 1rem; }
+.content-prose :where(blockquote)       { border-left: 2px solid var(--accent); padding: 2px 0 2px 16px; }
+.link-prose blockquote                  { border-left: 2px solid var(--rule); }
+
+/* Triangle/arrow shapes use a thick left edge with transparent top+bottom. */
+.dw-fold summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 5px solid var(--dim);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.right-arrow {
+  width: 0; height: 0;
+  border-left: 8px solid var(--accent);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+/* Column/grid separators: border-left alongside border-right (a frame, not
+ * a one-sided stripe). Exempt. */
+.split [data-gutter] { border-left: 1px solid var(--diffs-bg); border-right: 1px solid var(--diffs-bg); }
+table td + td        { border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+
+/* The suggested alternatives: full border + radius, or background tint. */
+.card       { border: 1px solid var(--rule); border-radius: var(--radius); }
+.callout    { padding: 1rem; background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.top-rule   { padding-bottom: 1rem; border-top: 1px solid var(--rule); }
+
+/* Longhands and zero-width resets never flag. */
+.callout-corner::before { border-bottom-color: var(--co); border-left-color: var(--co); }
+.zero-out   { border-left-width: 0; }
+.collapsed  { border: 1px solid var(--rule); border-left-width: 0; }

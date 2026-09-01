@@ -1,0 +1,16 @@
+/* Rule A: shorthand left-only accent stripes on custom classes, any width.
+ * All of these are the "colored stripe as decoration" tic. */
+.legend        { padding: 1rem; border-left: 3px solid var(--accent-2); }
+.callout--rfc  { padding: 1rem; border-left: 4px solid var(--rfc); }
+pre            { background: var(--surface); border-left: 3px solid var(--accent-2); }
+.comment       { background: var(--surface); padding: .5rem; border-left: 1px solid var(--accent); }
+.dw-comment    { padding: .5rem .85rem; border-left: 1px solid var(--accent); }
+.evidence      { padding: .8rem 1rem; border-left: 2px solid var(--accent); }
+.eyebrow       { padding-left: .5rem; border-left: 3px solid var(--accent); }
+.fat           { border-left: 12px solid #f00; }
+
+/* Rule B: full border with an over-thickened left side. */
+.review-annotation { border: 2px solid var(--accent); border-left-width: 7px; }
+.callout-bordered { border: 1px solid var(--rule); border-left-width: 4px; }
+
+/* The legitimate cases below are NOT flagged. They live in the pass fixture. */

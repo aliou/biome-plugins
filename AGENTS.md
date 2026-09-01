@@ -118,3 +118,4 @@ skills/            -- Agent skills (writing-gritql-plugins, setting-up-biome-plu
 | `no-unknown-parameters` | Disallows function parameters typed `unknown`, except a parameter named `cause`. |
 | `no-unknown-returns` | Disallows function return types of `unknown`, `Promise<unknown>`, or `PromiseLike<unknown>`. |
 | `no-unsafe-dictionary-type` | Disallows dictionary types with unsafe values: `Record<string, unknown/any/object/{}>` and equivalent index signatures. |
+| `no-left-border-accent` | Disallows `border-left` used as an ad-hoc accent stripe on non-`blockquote` boxes, and `border-left-width` overrides that thicken one side of a full `border`. Exempts `blockquote`, triangle/arrow shapes, and zero-width resets. Targets CSS (`.css` files and `<style>` blocks in HTML). |

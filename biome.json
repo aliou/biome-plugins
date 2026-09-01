@@ -21,7 +21,8 @@
 		"plugins/no-runtime-typeof.grit",
 		"plugins/no-unknown-parameters.grit",
 		"plugins/no-unknown-returns.grit",
-		"plugins/no-unsafe-dictionary-type.grit"
+		"plugins/no-unsafe-dictionary-type.grit",
+		"plugins/no-left-border-accent.grit"
 	],
 	"linter": {
 		"enabled": true,

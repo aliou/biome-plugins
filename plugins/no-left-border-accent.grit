@@ -1,0 +1,49 @@
+engine biome(1.0)
+language css
+
+// Agents slap a `border-left` on custom classes (.callout, .legend,
+// .evidence, .finding, .review-annotation, ...) and call the colored stripe
+// decoration. The legitimate uses are narrow and identifiable by structure,
+// not by an arbitrary width threshold:
+//
+//   1. The `blockquote` element (incl. `:where(blockquote)` and descendant
+//      selectors) -- the canonical quote rule, at any width.
+//   2. Triangle/arrow shapes, which always declare border-top + border-bottom
+//      (typically transparent) alongside the left edge.
+//   3. `border-left-color` longhands and zero-width resets -- never accents.
+//
+// Everything else is an ad-hoc accent. Use a full `border`, a `background`
+// tint, or a top rule instead.
+
+pattern positive_px() { r".*[1-9][0-9]*px.*" }
+
+or {
+    // Shorthand `border-left: <w>px solid <color>` used as the only/starring
+    // border on a non-blockquote, non-triangle box.
+    `$sel { $props }` as $rule where {
+        $props <: contains `border-left: $val;` as $decl,
+        $val <: r".*solid.*",
+        not $sel <: r".*blockquote.*",
+        // Skip triangle/arrow shapes: they declare border-top + border-bottom.
+        not $props <: contains `border-top: $tt;`,
+        not $props <: contains `border-bottom: $bb;`,
+        register_diagnostic(
+            span = $decl,
+            message = "`border-left` on a non-blockquote box reads as an ad-hoc accent stripe, not a deliberate design. Use a full `border`, a `background` tint, or a top rule.",
+            severity = "warn"
+        )
+    },
+
+    // Full `border` with `border-left-width` overridden to a positive width --
+    // the thick-left-accent-on-a-framed-box tic. Zero-width resets are exempt.
+    `$sel { $props }` as $rule where {
+        $props <: contains `border-left-width: $w;` as $decl,
+        $w <: positive_px(),
+        $props <: contains `border: $bv;`,
+        register_diagnostic(
+            span = $decl,
+            message = "Overriding `border-left-width` to thicken one side of a full `border` is an ad-hoc accent. Use the same width on all sides, or a `background` tint.",
+            severity = "warn"
+        )
+    }
+}
