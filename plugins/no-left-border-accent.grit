@@ -18,32 +18,23 @@ language css
 pattern positive_px() { r".*[1-9][0-9]*px.*" }
 
 or {
-    // Shorthand `border-left: <w>px solid <color>` used as the only/starring
-    // border on a non-blockquote, non-triangle box.
-    `$sel { $props }` as $rule where {
-        $props <: contains `border-left: $val;` as $decl,
-        $val <: r".*solid.*",
-        not $sel <: r".*blockquote.*",
-        // Skip triangle/arrow shapes: they declare border-top + border-bottom.
-        not $props <: contains `border-top: $tt;`,
-        not $props <: contains `border-bottom: $bb;`,
-        register_diagnostic(
-            span = $decl,
-            message = "`border-left` on a non-blockquote box reads as an ad-hoc accent stripe, not a deliberate design. Use a full `border`, a `background` tint, or a top rule.",
-            severity = "warn"
-        )
-    },
-
-    // Full `border` with `border-left-width` overridden to a positive width --
-    // the thick-left-accent-on-a-framed-box tic. Zero-width resets are exempt.
-    `$sel { $props }` as $rule where {
-        $props <: contains `border-left-width: $w;` as $decl,
-        $w <: positive_px(),
-        $props <: contains `border: $bv;`,
-        register_diagnostic(
-            span = $decl,
-            message = "Overriding `border-left-width` to thicken one side of a full `border` is an ad-hoc accent. Use the same width on all sides, or a `background` tint.",
-            severity = "warn"
-        )
-    }
+  // Shorthand `border-left: <w>px solid <color>` used as the only/starring
+  // border on a non-blockquote, non-triangle box.
+  `$sel { $props }` as $rule where {
+    $props <: contains `border-left: $val;` as $decl,
+    $val <: r".*solid.*",
+    not $sel <: r".*blockquote.*",
+    // Skip triangle/arrow shapes: they declare border-top + border-bottom.
+    not $props <: contains `border-top: $tt;`,
+    not $props <: contains `border-bottom: $bb;`,
+    register_diagnostic(span=$decl, message="`border-left` on a non-blockquote box reads as an ad-hoc accent stripe, not a deliberate design. Use a full `border`, a `background` tint, or a top rule.", severity="warn")
+  },
+  // Full `border` with `border-left-width` overridden to a positive width --
+  // the thick-left-accent-on-a-framed-box tic. Zero-width resets are exempt.
+  `$sel { $props }` as $rule where {
+    $props <: contains `border-left-width: $w;` as $decl,
+    $w <: positive_px(),
+    $props <: contains `border: $bv;`,
+    register_diagnostic(span=$decl, message="Overriding `border-left-width` to thicken one side of a full `border` is an ad-hoc accent. Use the same width on all sides, or a `background` tint.", severity="warn")
+  }
 }

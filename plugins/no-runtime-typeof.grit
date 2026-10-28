@@ -1,10 +1,6 @@
 engine biome(1.0)
-language js(typescript,jsx)
+language js(typescript, jsx)
 
 `typeof $value` as $check where {
-    register_diagnostic(
-        span = $check,
-        message = "A `typeof` check narrows a representation without establishing its contract. Parse input with a schema (e.g. typebox) at its I/O boundary, then branch on the domain value.",
-        severity = "error"
-    )
+  register_diagnostic(span=$check, message="A `typeof` check narrows a representation without establishing its contract. Parse input with a schema (e.g. typebox) at its I/O boundary, then branch on the domain value.", severity="error")
 }
