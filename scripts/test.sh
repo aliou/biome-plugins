@@ -85,13 +85,15 @@ test_fail() {
 }
 
 # setup_consumer
-#   Installs the package into a scratch project, the way npm would.
+#   Installs the packed tarball into a scratch project, the way npm would.
 setup_consumer() {
   CONSUMER="$(mktemp -d)"
   trap 'rm -rf "$CONSUMER"' EXIT
   local pkg="$CONSUMER/node_modules/@aliou/biome-plugins"
   mkdir -p "$pkg" "$CONSUMER/.pi" "$CONSUMER/.agents"
-  cp -R "$ROOT/package.json" "$ROOT/biome-manifest.json" "$ROOT/configs" "$ROOT/plugins" "$pkg/"
+  (cd "$ROOT" && pnpm pack --pack-destination "$CONSUMER" >/dev/null)
+  tar xzf "$CONSUMER"/*.tgz -C "$pkg" --strip-components=1
+  rm "$CONSUMER"/*.tgz
   cp -R "$ROOT/tests/package/." "$CONSUMER/"
   cp "$ROOT/tests/package/violations.ts" "$CONSUMER/.pi/"
   cp "$ROOT/tests/package/violations.ts" "$CONSUMER/.agents/"

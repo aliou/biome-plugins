@@ -3,12 +3,23 @@
   "version": "0.14.0",
   "description": "Custom Biome lint rules written as GritQL plugins",
   "license": "MIT",
+  "keywords": [
+    "biome",
+    "biome-plugin",
+    "gritql",
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/aliou/biome-plugins"
   },
   "packageManager": "pnpm@11.27.0",
+  "exports": {
+    "biome": "./biome-manifest.json"
+  },
   "files": [
+    "biome-manifest.json",
+    "configs",
     "plugins",
     "skills"
   ],
@@ -28,6 +39,6 @@
     "@changesets/cli": "^2.29.8"
   },
   "peerDependencies": {
-    "@biomejs/biome": ">=2.5.0"
+    "@biomejs/biome": ">=2.6.0"
   }
 }
