@@ -1,91 +1,114 @@
 # biome-plugins
 
-Custom Biome lint rules written as GritQL plugins.
+Custom Biome lint rules written as GritQL plugins, plus shared Biome configs that enable them. Requires Biome 2.6 or later.
 
-## Plugins
+## Install
 
-| Plugin | Description |
+```bash
+pnpm add -D @biomejs/biome @aliou/biome-plugins
+```
+
+## Use a config
+
+A config sets formatter, linter, and plugin defaults. Extend one in `biome.json` and keep only project-specific settings:
+
+```json
+{
+  "extends": ["@aliou/biome-plugins/configs/base"],
+  "files": { "includes": ["**/*.ts", "**/*.json"] }
+}
+```
+
+| Config | Contents |
 |---|---|
-| `no-inline-imports` | Disallows `await import()` and `require()` inside functions. All imports should be static `import` statements at the top of the file. |
-| `no-interpolated-classname` | Disallows template literals in `className` attributes. Enforces using a `cn()` utility instead. |
-| `phosphor-icon-suffix` | Enforces that Phosphor icon imports end with the `Icon` suffix (e.g. `HouseIcon`, not `House`). |
-| `no-js-import-extension` | Disallows `.js` extensions in import and re-export paths. Use `moduleResolution: "bundler"` in tsconfig.json instead. |
-| `no-ts-import-extension` | Disallows `.ts` extensions in import and re-export paths. Use `moduleResolution: "bundler"` in tsconfig.json instead. |
-| `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. |
-| `no-inner-types` | Disallows TypeScript `type` and `interface` declarations inside function bodies. |
-| `pi-no-node-exec` | Disallows importing from `child_process` / `node:child_process` in [pi](https://pi.dev) extensions. Use `pi.exec()` from the ExtensionAPI instead. |
-| `no-buried-await` | Disallows burying `await` inside parentheses or call arguments. Await the value first, then use it in a separate expression. |
-| `no-empty-catch` | Disallows empty `catch` blocks. Catch blocks must contain actual code, not only comments. |
-| `no-homedir` | Disallows importing `os.homedir`/`os.userInfo` and reading `process.env.HOME`. Use a configured paths utility instead. |
-| `no-is-record` | Disallows creating `isRecord` function helpers. Use explicit types or schema-specific validation instead. |
-| `no-unimported-text` | Requires `Text` references, including type annotations, `new Text()`, and `<Text>`, to have a runtime import binding. Prevents accidental use of the DOM `Text` global. |
-| `no-chained-type-assertions` | Disallows chained `as`/angle-bracket type assertions (e.g. `x as unknown as User`), except chains made only of `as const`. |
-| `no-conditional-empty-object-spread` | Disallows spreading a conditional that uses `{}` on one branch to omit fields (e.g. `{ ...(cond ? { x } : {}) }`). |
-| `no-reflect-apply` | Disallows `Reflect.apply()`. Call the typed function directly or model dynamic dispatch behind a named interface. |
-| `no-reflect-get` | Disallows `Reflect.get()`. Use typed property access, or parse dynamic input into a named domain type first. |
-| `no-runtime-typeof` | Disallows `typeof` checks. Parse input with a schema at its I/O boundary instead of narrowing ad hoc. |
-| `no-unknown-parameters` | Disallows function parameters typed `unknown`, except a parameter named `cause`. |
-| `no-unknown-returns` | Disallows function return types of `unknown`, `Promise<unknown>`, or `PromiseLike<unknown>`. |
-| `no-unsafe-dictionary-type` | Disallows dictionary types with unsafe values: `Record<string, unknown/any/object/{}>` and equivalent index signatures. |
-| `no-left-border-accent` | Disallows `border-left` used as an ad-hoc accent stripe on non-`blockquote` boxes, and `border-left-width` overrides that thicken one side of a full `border`. Exempts `blockquote`, triangle/arrow shapes, and zero-width resets. Targets CSS (`.css` files and `<style>` blocks in HTML). |
+| `configs/base` | Git ignore file, 2-space indent, Biome's recommended rules, organize imports, and the `recommended` preset. Skips `.pi/` and `.agents/`, does not format Markdown, `pnpm-lock.yaml`, or `pnpm-workspace.yaml`. |
+| `configs/strict` | `base` plus the `strict` preset. |
+| `configs/pi` | `base` plus the `pi` preset. |
 
-## Usage
+Configs can be combined: `"extends": ["@aliou/biome-plugins/configs/strict", "@aliou/biome-plugins/configs/pi"]`.
 
-### 1. Install
+## Use plugins directly
 
-```bash
-npm install --save-dev @aliou/biome-plugins
-```
-
-Or with any other package manager:
-
-```bash
-pnpm add -D @aliou/biome-plugins
-bun add -d @aliou/biome-plugins
-```
-
-### 2. Configure
-
-Reference the plugins you want in your `biome.json` using relative paths to `node_modules`:
+Enable presets or single rules in `plugins`:
 
 ```json
 {
   "plugins": [
-    "./node_modules/@aliou/biome-plugins/plugins/no-interpolated-classname.grit",
-    "./node_modules/@aliou/biome-plugins/plugins/phosphor-icon-suffix.grit"
+    "@aliou/biome-plugins/presets/recommended",
+    "@aliou/biome-plugins/no-homedir"
   ]
 }
 ```
 
-Pick only the ones you need -- each plugin is a standalone `.grit` file, and several only apply to specific stacks (for example `phosphor-icon-suffix` only in projects using Phosphor icons, `pi-no-node-exec` only in [pi](https://pi.dev) extension projects). Audit your codebase first: register a plugin because it fires on real code, not by default.
+Presets do not overlap. Stack them on top of `recommended`.
 
-To scope a plugin to specific files, use the object form with `includes` globs (requires Biome >= 2.5):
+| Preset | Rules |
+|---|---|
+| `presets/recommended` | `no-buried-await`, `no-emojis`, `no-empty-catch`, `no-inline-imports`, `no-inner-types`, `no-is-record`, `no-js-import-extension`, `no-ts-import-extension` |
+| `presets/strict` | `no-chained-type-assertions`, `no-conditional-empty-object-spread`, `no-reflect-apply`, `no-reflect-get` |
+| `presets/schema` | `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type` |
+| `presets/pi` | `no-unimported-text`, `pi-no-node-exec` |
+| `presets/react` | `no-interpolated-classname` |
+
+To scope a rule or preset to some files, use the object form:
 
 ```json
 {
   "plugins": [
-    {
-      "path": "./node_modules/@aliou/biome-plugins/plugins/pi-no-node-exec.grit",
-      "includes": ["extensions/**/*.ts"]
-    }
+    { "path": "@aliou/biome-plugins/presets/schema", "includes": ["src/api/**"] }
   ]
 }
 ```
 
-### 3. Run
+Run `biome inspect plugins` to list the enabled rules and the preset each comes from.
 
-Plugin diagnostics show up when running `biome lint` or `biome check` as usual:
+## Suppress a diagnostic
 
-```bash
-biome check .
+Use the package-qualified rule name, or `lint/plugin` to suppress any plugin:
+
+```ts
+// biome-ignore lint/plugin/@aliou/biome-plugins/no-homedir: resolves the config directory
 ```
 
-To suppress a plugin diagnostic, use a suppression comment with the `plugin` category: `// biome-ignore lint/plugin: reason`.
+## Rules
+
+All rules report errors, except `no-left-border-accent`, which warns.
+
+| Rule | Description |
+|---|---|
+| `no-buried-await` | Disallows `await` inside parentheses or call arguments. Await the value first, then use it. |
+| `no-chained-type-assertions` | Disallows chained type assertions such as `x as unknown as User`, except chains made only of `as const`. |
+| `no-conditional-empty-object-spread` | Disallows spreading a conditional with `{}` on one branch, such as `{ ...(cond ? { x } : {}) }`. |
+| `no-emojis` | Disallows emoji in string literals, template literals, and JSX text. |
+| `no-empty-catch` | Disallows `catch` blocks that are empty or contain only comments. |
+| `no-homedir` | Disallows importing `homedir` or `userInfo` from `os` and reading `process.env.HOME`. |
+| `no-inline-imports` | Disallows `await import()` and `require()` inside functions, and `import()` types anywhere. |
+| `no-inner-types` | Disallows `type` and `interface` declarations inside function bodies. |
+| `no-interpolated-classname` | Disallows template literals in `className`. Use a `cn()` helper. |
+| `no-is-record` | Disallows `isRecord` helper functions. |
+| `no-js-import-extension` | Disallows `.js` extensions in import and export paths. Unsafe fix removes the extension. |
+| `no-left-border-accent` | Disallows `border-left` accent stripes on non-`blockquote` boxes in CSS. |
+| `no-reflect-apply` | Disallows `Reflect.apply()`. |
+| `no-reflect-get` | Disallows `Reflect.get()`. |
+| `no-runtime-typeof` | Disallows `typeof` checks. Parse input with a schema at the boundary. |
+| `no-ts-import-extension` | Disallows `.ts` extensions in import and export paths. Unsafe fix removes the extension. |
+| `no-unimported-text` | Requires every `Text` reference to come from an import, so the DOM `Text` global is never used by accident. |
+| `no-unknown-parameters` | Disallows parameters typed `unknown`, except one named `cause`. |
+| `no-unknown-returns` | Disallows `unknown`, `Promise<unknown>`, and `PromiseLike<unknown>` return types. |
+| `no-unsafe-dictionary-type` | Disallows `Record<string, unknown \| any \| object \| {}>` and equivalent index signatures. |
+| `phosphor-icon-suffix` | Requires Phosphor icon imports to end with `Icon`. |
+| `pi-no-node-exec` | Disallows `child_process` in [pi](https://pi.dev) extensions. Use `pi.exec()`. |
+
+The fixes for the import extension rules need `moduleResolution: "bundler"` in `tsconfig.json`. Apply them with `biome lint --write --unsafe`.
 
 ## Limitations
 
-Biome's plugin system is still experimental. There is no automatic npm package resolution for plugins -- you must use explicit relative paths to `node_modules` as shown above.
+GritQL has no scope analysis or type information. The `schema` rules match syntax only: they do not resolve type aliases and cannot tell a real parsing boundary from an `unknown` escape hatch. Scope them with `includes` to adopt them gradually.
 
-See [biomejs/biome#6265](https://github.com/biomejs/biome/discussions/6265) for the ongoing discussion on plugin distribution.
+## Development
 
-GritQL has no scope analysis, no cross-statement dataflow, and no access to type-alias environments. The schema-boundary plugins (`no-runtime-typeof`, `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type`) match direct syntactic forms only -- they don't resolve local type aliases, and they don't distinguish `unknown`/`Record<string, unknown>` used as a genuine parsing boundary from the same types used as an escape hatch. Adopt them per file or per package with the `includes` option if you want to migrate incrementally.
+```bash
+nix develop
+pnpm install
+pnpm test
+```

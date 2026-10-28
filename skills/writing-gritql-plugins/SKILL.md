@@ -17,7 +17,7 @@ language js(jsx)
 ```
 
 - `engine biome(1.0)` tells GritQL to use Biome's syntax tree (not Tree-sitter's).
-- `language` sets the target language: `js`, `js(jsx)`, `js(typescript)`, `js(typescript,jsx)`, `css`, or `json`.
+- `language` sets the target language: `js`, `js(jsx)`, `js(typescript)`, `js(typescript, jsx)`, `css`, or `json`.
 
 After headers, write one or more patterns with conditions and `register_diagnostic()` calls.
 
@@ -34,7 +34,7 @@ register_diagnostic(
 )
 ```
 
-Diagnostics can be suppressed with `// biome-ignore lint/plugin: reason` comments.
+Diagnostics can be suppressed with `// biome-ignore lint/plugin: reason`, or for a rule loaded from this package, `// biome-ignore lint/plugin/@aliou/biome-plugins/<rule>: reason`.
 
 ## Code fixes (rewrites)
 
@@ -58,13 +58,12 @@ A match can be rewritten with `=>`, turning the diagnostic into a fixable one:
 
 ### Fix constraints
 
-The replacement must be built structurally from captured metavariables. The engine offers no string computation:
+The replacement is built from captured metavariables. `let` bindings and string functions (`replace`, `substring`, `lowercase`) fail to compile. Capture the substring instead:
 
-- `let` bindings fail to compile.
-- String functions (`replace`, `substring`, `lowercase`) fail to compile.
-- Metavariables inside string literals compile but never match: `` `"./$path.js"` `` is a dead end.
+- Metavariables inside string literals match part of the string: `` `foo("$x.js")` `` binds `$x` to `a` in `foo("a.js")`.
+- A regex binds its capturing groups to the variables after it: `$source <: r"^[\"'](.*)\.js[\"']$"($path)`, then `` $source => `"$path"` ``. `plugins/no-js-import-extension.grit` uses this.
 
-So fixes that require computing a new string -- stripping a `.js` suffix from an import path, mapping one identifier to another -- cannot be expressed today (tracked in [biomejs/biome#2582](https://github.com/biomejs/biome/issues/2582)).
+Mapping one identifier to an unrelated one still cannot be expressed.
 
 ## Pattern syntax
 
@@ -174,33 +173,33 @@ language css
 
 ## Configuration
 
-In `biome.json`, a plugin entry is a path string or an object with `includes` globs (Biome >= 2.5):
+In `biome.json`, a plugin entry is a path, a package export, or an object with `includes` globs:
 
 ```json
 {
   "plugins": [
     "./plugins/my-rule.grit",
-    { "path": "./plugins/pi-no-node-exec.grit", "includes": ["extensions/**/*.ts"] }
+    { "path": "@aliou/biome-plugins/pi-no-node-exec", "includes": ["extensions/**/*.ts"] }
   ]
 }
 ```
 
-Paths are relative to the `biome.json` file. `includes` patterns can be negated with `!`. See the `setting-up-biome-plugins` skill for consumer-side setup.
+Paths are relative to the `biome.json` file. `includes` patterns can be negated with `!`. This package exports each rule and preset through `biome-manifest.json`. See the `setting-up-biome-plugins` skill for consumer-side setup.
 
 There is no way to pass options or variables into a `.grit` file -- values must be hardcoded in the pattern ([biomejs/biome#10928](https://github.com/biomejs/biome/issues/10928)).
 
 ## Testing
 
-Add fixtures to `tests/fail/` (must trigger, with the expected message) and `tests/pass/` (must lint clean), wire them into `scripts/test.sh`, then run:
+Add fixtures to `tests/fail/` and `tests/pass/`, then wire them into `scripts/test.sh`:
+
+- `test_fail <fixture> <message> <count>` asserts the exact number of diagnostics. Exact counts catch rules that stop after the first match.
+- `test_pass <fixture>` fails on any diagnostic, warnings included.
+- `test_fix <fixture> <expected>` applies all fixes, unsafe ones included, and compares the result to a file in `tests/fixed/`.
+
+Run `pnpm test` inside `nix develop`. For a quick manual check:
 
 ```bash
-pnpm test
-```
-
-For a quick manual check, lint a file that should trigger:
-
-```bash
-npx biome lint /tmp/test-file.tsx
+node_modules/.bin/biome lint --config-path tests/plugins.json tests/fail/my-rule.ts
 ```
 
 Plugin diagnostics appear with the `plugin` category in output.
@@ -208,27 +207,24 @@ Plugin diagnostics appear with the `plugin` category in output.
 ## Limitations
 
 - Target languages: JavaScript, CSS, and JSON.
-- No `let` bindings or string functions; metavariables inside string literals never match.
+- No `let` bindings or string functions.
 - No cross-file analysis: patterns only see the file being linted.
 - No plugin options; no severity override, no banned-name lists.
-- No automatic npm package resolution (must use relative paths).
 - Still experimental; some GritQL features are missing (tracking: [biomejs/biome#2582](https://github.com/biomejs/biome/issues/2582)).
 
 ## Gotchas found in practice
 
-- **No capturing groups in regex.** `r"(unknown|any)"` fails to compile with `regex pattern matched N variables, but expected 0` -- Grit treats a capturing group as an unnamed variable binding. Use non-capturing groups: `r"(?:unknown|any)"`.
+- **Every capturing group needs a variable.** `r"(unknown|any)"` errors with `regex pattern matched 1 variables, but expected 0`. Bind it, `r"(unknown|any)"($kind)`, or use a non-capturing group, `r"(?:unknown|any)"`.
+- **Match each import specifier, not the import statement.** Snippets such as `` `import { $a, $b } from "os"` `` only match a fixed number of specifiers. Match `or { JsShorthandNamedImportSpecifier() as $spec, JsNamedImportSpecifier() as $spec }` and constrain it with `` $spec <: within `import { $_ } from "os"` ``. `plugins/no-homedir.grit` uses this. Requires Biome 2.5.13 or later.
 - **Regex is a full-text match, not a search.** A pattern like `r"^\s*cause\b"` used in a `not` condition to exempt a case looks like "starts with cause", but the regex must match the ENTIRE node text -- against real parameter text like `cause: unknown` it never matches, so the exemption silently never fires. Anchor to the whole shape instead: `r"^\s*cause\b[\s\S]*$"`. The same trap applies to positive matches: `r":\s*unknown$"` misses `value: unknown = fallback` because the node's full text continues past `unknown`; account for optional trailing syntax (`(?:\s*=[\s\S]*)?`) or the match fails on every case that has one.
 - **`contains` searches every descendant, not just direct children.** `$sig <: contains TsUnknownType()` on an index signature also matches `unknown` nested arbitrarily deep in the value type (`{ [k: string]: { nested: unknown } }`), a false positive when the rule should only care about the direct value type. Bind the specific field instead and test its own text or shape: `TsIndexSignatureTypeMember(type_annotation = $ann) where { $ann <: r"^\s*:\s*unknown\s*$" }`.
 - **Field names for structurally similar positions differ across node kinds.** Return-type annotations aren't one shape: most function-like nodes use `return_type_annotation: TsReturnTypeAnnotation?` (node text includes the leading `:`), but `TsFunctionType`/`TsConstructorType` use `return_type: AnyTsReturnType` directly (no colon in the text), getters (`JsGetterObjectMember`, `JsGetterClassMember`, `TsGetterSignatureClassMember`) use `return_type: TsTypeAnnotation?`, and `TsGetterSignatureTypeMember` uses `type_annotation: TsTypeAnnotation?` instead. Check the field name and text shape per node kind rather than assuming consistency across similar-looking nodes; `js.ungram` in the Biome repo is the source of truth when the Playground syntax tree doesn't make a field name obvious.
 
 ## After creating a plugin
 
-Update the plugin table in the following files so they stay in sync:
-- `README.md` (consumer-facing)
-- `AGENTS.md` (agent context)
-- `skills/setting-up-biome-plugins/SKILL.md` (setup skill)
-
-Add a row with the plugin filename (without extension) and a short description, plus a relevance note in the setup skill.
+1. Add the rule to `plugins.rules` in `biome-manifest.json`, and to a preset only if every project using that preset should get it.
+2. Add a row to the rule table in `README.md`.
+3. If it joins a preset or stands alone, update the table in `skills/setting-up-biome-plugins/SKILL.md`.
 
 ## References
 

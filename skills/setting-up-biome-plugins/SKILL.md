@@ -1,141 +1,102 @@
 ---
 name: setting-up-biome-plugins
-description: Adopting @aliou/biome-plugins in a consumer project. Use when adding, removing, or scoping Biome GritQL plugins from this package in a project's biome.json. Covers auditing the codebase for violations, choosing relevant plugins, registration with includes scoping, and verifying the setup.
+description: Adopts @aliou/biome-plugins in a project's biome.json. Use when extending its shared configs, enabling its presets or rules, scoping them to files, migrating from ./node_modules/.../*.grit plugin paths, or rewriting its suppression comments. Requires Biome 2.6 or later.
 ---
 
-# Setting Up Biome Plugins
+# Setting up @aliou/biome-plugins
 
-This skill covers how to adopt plugins from `@aliou/biome-plugins` in a consumer project: audit first, pick only relevant plugins, register them in `biome.json`, and verify they fire.
-
-## Step 1: Audit before enabling
-
-Enable a plugin because it fires on real code in the project, not by default. Before adding it:
-
-- **Grep for the pattern** it bans. Zero hits means the plugin adds nothing today -- skip it or accept it as a guardrail, knowingly.
-- **Or run a trial lint**: register the plugin temporarily and run `biome lint` to count diagnostics. Many hits means fix the code (or scope with `includes`) before committing to the plugin, or the change drowns in errors.
-
-Example greps:
+## Install
 
 ```bash
-grep -rn "await import(\|require(" src/          # no-inline-imports
-grep -rn "process.env.HOME\|from \"os\"" src/    # no-homedir
-grep -rn "@phosphor-icons/react" src/            # phosphor-icon-suffix (any hits at all?)
-grep -rn "typeof .* ===\|typeof .* !==" src/     # no-runtime-typeof
-grep -rn "Record<[a-zA-Z ,]*, *\(unknown\|any\|object\)>" src/  # no-unsafe-dictionary-type
+pnpm add -D @biomejs/biome@^2.6 @aliou/biome-plugins
 ```
 
-If a plugin's subject does not exist in the codebase (no Phosphor imports, no `child_process`), do not register it.
+## Choose a config
 
-## Step 2: Pick relevant plugins
+Start from a config and keep only project-specific settings in `biome.json`:
 
-| Plugin | Description | Applies when |
+```json
+{
+  "extends": ["@aliou/biome-plugins/configs/base"],
+  "files": { "includes": ["**/*.ts", "**/*.json"] }
+}
+```
+
+| Config | Use when |
+|---|---|
+| `configs/base` | Any TypeScript project. Git ignore file, 2-space indent, Biome recommended rules, organize imports, `presets/recommended`. Skips `.pi/` and `.agents/`. Does not format Markdown or pnpm-managed YAML. |
+| `configs/strict` | `base` plus `presets/strict`. New projects. |
+| `configs/pi` | `base` plus `presets/pi`. [pi](https://pi.dev) extensions and packages. |
+
+Configs combine: `"extends": ["@aliou/biome-plugins/configs/strict", "@aliou/biome-plugins/configs/pi"]`.
+
+Do not repeat settings the config already sets. Keep the project's own `files.includes`, rule overrides, and `overrides`.
+
+## Add presets or rules
+
+Add entries to `plugins` on top of a config, or without one:
+
+```json
+{
+  "plugins": [
+    "@aliou/biome-plugins/presets/schema",
+    "@aliou/biome-plugins/no-homedir"
+  ]
+}
+```
+
+| Entry | Rules | Use when |
 |---|---|---|
-| `no-inline-imports` | Disallows `await import()` and `require()` inside functions. | Any JS/TS project standardizing on static imports. |
-| `no-interpolated-classname` | Disallows template literals in `className`. Use `cn()` instead. | Frontend projects that have a `cn()` utility (clsx/tailwind-merge). |
-| `phosphor-icon-suffix` | Phosphor icon imports must end with the `Icon` suffix. | Frontend projects using `@phosphor-icons/react`. |
-| `no-js-import-extension` | Disallows `.js` extensions in import and re-export paths. | TypeScript projects using `moduleResolution: "bundler"` in tsconfig.json. |
-| `no-ts-import-extension` | Disallows `.ts` extensions in import and re-export paths. | TypeScript projects using `moduleResolution: "bundler"` in tsconfig.json. |
-| `no-emojis` | Disallows emoji characters in string literals, template literals, and JSX text. | Any project adopting a no-emoji writing convention. |
-| `no-inner-types` | Disallows `type`/`interface` declarations inside function bodies. | TypeScript projects. |
-| `pi-no-node-exec` | Disallows `child_process` imports; use `pi.exec()` from the ExtensionAPI instead. | [pi](https://pi.dev) extension projects only. |
-| `no-buried-await` | Disallows burying `await` inside parentheses or call arguments. | Async TypeScript projects. |
-| `no-empty-catch` | Disallows empty `catch` blocks (comments alone don't count). | Any project. |
-| `no-homedir` | Disallows `os.homedir`/`os.userInfo` imports and `process.env.HOME`; use a configured paths utility instead. | Projects that have a paths utility to point to. |
-| `no-is-record` | Disallows `isRecord()` helper functions. | TypeScript projects validating objects with explicit types or schemas. |
-| `no-unimported-text` | Requires `Text` references to have a runtime import binding. | Projects rendering a `Text` component from a TUI library (pi/ink). Guards against the DOM `Text` global. |
-| `no-chained-type-assertions` | Disallows chained `as`/angle-bracket type assertions (e.g. `x as unknown as User`), except chains made only of `as const`. | TypeScript projects rejecting assertion chains that discard type evidence. |
-| `no-conditional-empty-object-spread` | Disallows spreading a conditional that uses `{}` on one branch to omit fields (e.g. `{ ...(cond ? { x } : {}) }`). | Any project building option/config objects with conditional spreads. |
-| `no-reflect-apply` | Disallows `Reflect.apply()`. | Any project. Rarely used deliberately; catches accidental or generated dynamic-dispatch code. |
-| `no-reflect-get` | Disallows `Reflect.get()`. | Any project. Same as above, for dynamic property access. |
-| `no-runtime-typeof` | Disallows `typeof` checks. | TypeScript projects that parse external input with a schema library (typebox, zod) at I/O boundaries. |
-| `no-unknown-parameters` | Disallows function parameters typed `unknown`, except a parameter named `cause`. | TypeScript projects enforcing schema validation at boundaries instead of `unknown` escape hatches. |
-| `no-unknown-returns` | Disallows function return types of `unknown`, `Promise<unknown>`, or `PromiseLike<unknown>`. | Same as `no-unknown-parameters`; usually adopted together. |
-| `no-unsafe-dictionary-type` | Disallows dictionary types with unsafe values: `Record<string, unknown/any/object/{}>` and equivalent index signatures. | Same as `no-unknown-parameters`; usually adopted together. |
+| `presets/recommended` | `no-buried-await`, `no-emojis`, `no-empty-catch`, `no-inline-imports`, `no-inner-types`, `no-is-record`, `no-js-import-extension`, `no-ts-import-extension` | Any TypeScript project with `moduleResolution: "bundler"`. |
+| `presets/strict` | `no-chained-type-assertions`, `no-conditional-empty-object-spread`, `no-reflect-apply`, `no-reflect-get` | Projects that reject type escape hatches. |
+| `presets/schema` | `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type` | Projects that parse all external input with a schema library. |
+| `presets/pi` | `no-unimported-text`, `pi-no-node-exec` | pi extensions. |
+| `presets/react` | `no-interpolated-classname` | React projects with a `cn()` helper. |
+| `no-homedir` | | Projects with a paths utility to point to. |
+| `no-runtime-typeof` | | Projects that parse input with a schema at I/O boundaries. |
+| `phosphor-icon-suffix` | | Projects importing `@phosphor-icons/react`. |
+| `no-left-border-accent` | | CSS projects. |
 
-All plugins register diagnostics with severity `error`.
+Presets do not overlap, so stacking them never reports a rule twice. Do not also list a rule that an enabled preset includes: Biome reports it twice.
 
-`no-runtime-typeof`, `no-unknown-parameters`, `no-unknown-returns`, and `no-unsafe-dictionary-type` are a schema-boundary group: they push a project toward parsing external input with a schema library instead of ad hoc narrowing. They match direct syntactic forms only -- no local type-alias resolution, no distinguishing a genuine parsing boundary from an `unknown` escape hatch. Expect them to flag existing schema-parser code you want to keep (a function that legitimately takes `value: unknown` and validates it) alongside real violations; adopt with `includes` scoping per package if migrating incrementally.
+Before enabling `strict`, `schema`, or a single rule in an existing project, run a trial lint and count the diagnostics. Many hits means fix the code first or scope the entry with `includes`. Skip rules whose subject does not exist in the project, such as `phosphor-icon-suffix` without Phosphor imports.
 
-## Step 3: Install
+## Scope to files
+
+Use the object form. Globs match relative to the `biome.json` that declares them:
+
+```json
+{
+  "plugins": [
+    { "path": "@aliou/biome-plugins/presets/schema", "includes": ["src/api/**"] }
+  ]
+}
+```
+
+`includes` narrows the files a plugin runs on. It cannot add files that `files.includes` or `linter.includes` exclude.
+
+## Migrate from .grit paths
+
+Projects set up before Biome 2.6 list files such as `./node_modules/@aliou/biome-plugins/plugins/no-emojis.grit`.
+
+1. Replace the `plugins` list with a config in `extends`, or with presets and rules. Remove every `.grit` path: a rule loaded through a path and through a preset reports twice.
+2. Remove settings the config already sets.
+3. Rewrite suppressions. `lint/plugin/<name>` does not match rules loaded through the package:
+
+   ```bash
+   rg -l 'biome-ignore(-all|-start|-end)? lint/plugin/[a-z-]+' --glob '!node_modules' | while read -r f; do
+     perl -pi -e 's#(biome-ignore(?:-all|-start|-end)? lint/plugin/)(?!@)([a-z-]+)#$1\@aliou/biome-plugins/$2#g' "$f"
+   done
+   ```
+
+   `lint/plugin` without a rule name still suppresses every plugin.
+
+## Verify
 
 ```bash
-npm install --save-dev @aliou/biome-plugins
-# or
-pnpm add -D @aliou/biome-plugins
-bun add -d @aliou/biome-plugins
+biome inspect plugins   # enabled rules and the preset each comes from
+biome inspect config    # resolved settings and where each comes from
+biome check .
 ```
 
-## Step 4: Register in biome.json
-
-Add plugin paths to the `plugins` array. Paths are relative to the `biome.json` file and must point into `node_modules`:
-
-```json
-{
-  "plugins": [
-    "./node_modules/@aliou/biome-plugins/plugins/no-empty-catch.grit",
-    "./node_modules/@aliou/biome-plugins/plugins/no-emojis.grit"
-  ]
-}
-```
-
-Pick only the plugins you need. Each plugin is standalone.
-
-### File scoping with includes
-
-Plugin entries can be objects with `path` and `includes` to scope a plugin to specific files. The object format requires Biome >= 2.5:
-
-```json
-{
-  "plugins": [
-    {
-      "path": "./node_modules/@aliou/biome-plugins/plugins/pi-no-node-exec.grit",
-      "includes": ["extensions/**/*.ts"]
-    },
-    {
-      "path": "./node_modules/@aliou/biome-plugins/plugins/no-emojis.grit",
-      "includes": ["src/**/*.tsx", "!**/*.test.tsx"]
-    }
-  ]
-}
-```
-
-Includes syntax:
-
-- Glob patterns match relative to the `biome.json` file.
-- `**` matches all files and subfolders recursively; `*` matches within a single path segment.
-- Patterns starting with `!` are exclusions.
-- Without `includes`, the plugin runs on all files the linter processes. `includes` can narrow scope, not expand it beyond what Biome is already linting.
-
-String and object entries can coexist in the same array:
-
-```json
-{
-  "plugins": [
-    "./node_modules/@aliou/biome-plugins/plugins/no-empty-catch.grit",
-    {
-      "path": "./node_modules/@aliou/biome-plugins/plugins/pi-no-node-exec.grit",
-      "includes": ["extensions/**/*.ts"]
-    }
-  ]
-}
-```
-
-`linter.includes` (or `files.includes`) still controls which files the linter processes overall; a file must pass both to be linted by a given plugin. If a file is excluded by `linter.includes`, a plugin's `includes` cannot bring it back.
-
-In a monorepo, plugin paths are relative to the `biome.json` that declares them.
-
-## Step 5: Verify
-
-Run `biome lint` on a file that should trigger:
-
-```bash
-npx biome lint src/example.tsx
-```
-
-Plugin diagnostics appear with the `plugin` category in the output. Then run it on a clean file and confirm no diagnostics. Suppression comments use the `plugin` category: `// biome-ignore lint/plugin: reason`.
-
-## Common issues
-
-- **No diagnostics from a plugin**: Check the path is correct and relative to `biome.json`. Check `linter.enabled` is not `false`. Check `includes` patterns match the target files.
-- **Plugin running on wrong files**: Add `includes` with glob patterns to scope it; use negated patterns (`!`) for exclusions.
-- **Biome version too old for includes**: The object format `{ "path": ..., "includes": [...] }` requires Biome >= 2.5.
+Biome reports an unused suppression as `suppressions/unused`. Treat it as a missed rewrite.
