@@ -57,26 +57,50 @@ if [ ! -x "$BIOME" ]; then
   exit 1
 fi
 
-# test_fail <fixture> <expected_message>
-#   Runs biome on a fixture file and asserts the output contains the expected message.
+# assert_count <name> <output> <expected_message> [expected_count]
+#   Passes when output reports the message, exactly expected_count times when given.
+assert_count() {
+  local name="$1"
+  local output="$2"
+  local expected="$3"
+  local count="${4:-}"
+  local actual
+
+  actual=$(echo "$output" | grep -E '^  (×|!|i) ' | grep -cF -- "$expected" || true)
+
+  if [ -z "$count" ] && [ "$actual" -gt 0 ] || [ "$actual" = "$count" ]; then
+    record_pass "  pass: $name ($actual x '$expected')"
+  else
+    record_fail "  FAIL: $name -- expected ${count:-at least 1} x '$expected', got $actual"
+    echo "${output//$'\n'/$'\n'    }"
+  fi
+}
+
+# test_fail <fixture> <expected_message> [expected_count]
 test_fail() {
   local fixture="$1"
+  local output
+  output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" --max-diagnostics=none "$fixture" 2>&1 || true)
+  assert_count "$(basename "$fixture")" "$output" "$2" "${3:-}"
+}
+
+# test_fix <fixture> <expected_file>
+#   Applies all fixes, including unsafe ones, and compares the result to expected_file.
+test_fix() {
+  local fixture="$1"
   local expected="$2"
-  local name
+  local name diff_output
   name="$(basename "$fixture")"
 
-  output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" "$fixture" 2>&1 || true)
+  set +e
+  diff_output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" --write --unsafe --stdin-file-path="$fixture" <"$fixture" | diff - "$expected")
+  set -e
 
-  if echo "$output" | grep -qF "$expected"; then
-    record_pass "  pass: $name (error detected)"
-    if [ "$SHOW_ALL" -eq 1 ]; then
-      echo "  output:"
-      echo "${output//$'\n'/$'\n'    }"
-    fi
+  if [ -z "$diff_output" ]; then
+    record_pass "  pass: $name (fix matches $(basename "$(dirname "$expected")")/$(basename "$expected"))"
   else
-    record_fail "  FAIL: $name -- expected message not found: $expected"
-    echo "  output:"
-    echo "${output//$'\n'/$'\n'    }"
+    record_fail "  FAIL: $name -- fixed output differs from $expected"
+    echo "${diff_output//$'\n'/$'\n'    }"
   fi
 }
 
@@ -88,7 +112,7 @@ test_pass() {
   name="$(basename "$fixture")"
 
   set +e
-  output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" "$fixture" 2>&1)
+  output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" --error-on-warnings "$fixture" 2>&1)
   status=$?
   set -e
 
@@ -113,15 +137,17 @@ test_fail "tests/fail/no-interpolated-classname.tsx" "Use cn() instead of templa
 test_pass "tests/pass/no-interpolated-classname.tsx"
 
 log_all "--- phosphor-icon-suffix ---"
-test_fail "tests/fail/phosphor-icon-suffix.tsx" "Phosphor icon imports require Icon suffix"
+test_fail "tests/fail/phosphor-icon-suffix.tsx" "Phosphor icon imports require Icon suffix" 7
 test_pass "tests/pass/phosphor-icon-suffix.tsx"
 
 log_all "--- no-js-import-extension ---"
-test_fail "tests/fail/no-js-import-extension.tsx" "Remove the .js extension"
+test_fail "tests/fail/no-js-import-extension.tsx" "Remove the .js extension" 9
+test_fix "tests/fail/no-js-import-extension.tsx" "tests/fixed/no-js-import-extension.tsx"
 test_pass "tests/pass/no-js-import-extension.tsx"
 
 log_all "--- no-ts-import-extension ---"
-test_fail "tests/fail/no-ts-import-extension.tsx" "Remove the .ts extension"
+test_fail "tests/fail/no-ts-import-extension.tsx" "Remove the .ts extension" 9
+test_fix "tests/fail/no-ts-import-extension.tsx" "tests/fixed/no-ts-import-extension.tsx"
 test_pass "tests/pass/no-ts-import-extension.tsx"
 
 log_all "--- no-emojis ---"
@@ -133,7 +159,7 @@ test_fail "tests/fail/no-inner-types.tsx" "Do not declare TypeScript types insid
 test_pass "tests/pass/no-inner-types.tsx"
 
 log_all "--- pi-no-node-exec ---"
-test_fail "tests/fail/pi-no-node-exec.tsx" "Do not use child_process directly"
+test_fail "tests/fail/pi-no-node-exec.tsx" "Do not use child_process directly" 7
 test_pass "tests/pass/pi-no-node-exec.tsx"
 
 log_all "--- no-buried-await ---"
@@ -145,7 +171,8 @@ test_fail "tests/fail/no-empty-catch.tsx" "Empty catch blocks are not allowed"
 test_pass "tests/pass/no-empty-catch.tsx"
 
 log_all "--- no-homedir ---"
-test_fail "tests/fail/no-homedir.ts" "Do not use os.homedir()"
+test_fail "tests/fail/no-homedir.ts" "Do not use os.homedir()" 3
+test_fail "tests/fail/no-homedir.ts" "Do not read process.env.HOME" 2
 test_pass "tests/pass/no-homedir.ts"
 
 log_all "--- no-is-record ---"

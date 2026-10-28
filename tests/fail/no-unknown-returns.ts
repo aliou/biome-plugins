@@ -1,4 +1,3 @@
-// From pi-processes .pi/extensions-disabled/dev-events-log.ts
 export function sanitizeForJson(value: object, seen = new WeakSet<object>()): unknown {
   return value;
 }

@@ -1,4 +1,3 @@
-// From pi-processes src/manager/process-output.ts
 interface OutputRecord {
   appendedText: string[];
   droppedLines: number;

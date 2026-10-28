@@ -1,5 +1,3 @@
-// Updated for the schema-first rules: validate with typebox instead of
-// hand-rolled narrowing helpers.
 import { Type, type Static } from "typebox";
 import { Value } from "typebox/value";
 

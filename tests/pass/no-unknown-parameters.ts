@@ -1,4 +1,3 @@
-// The `cause` convention is exempt: error-cause enrichment is the allowed boundary.
 export function enrichError(message: string, cause: unknown): Error {
   return new Error(message, { cause });
 }

@@ -1,4 +1,3 @@
-// From pi-ts-aperture extensions/aperture/dedicated/runtime.ts
 type ProviderModelConfig = { id: string; label: string };
 interface Model<Api> {
   id: string;
@@ -16,7 +15,6 @@ export function toModels<Api>(catalog: object): Model<Api>[] {
   return catalog as unknown as Model<Api>[];
 }
 
-// From pi-ts-aperture extensions/aperture/settings/shared.ts
 type ApertureConfig = { theme: string };
 
 export function mergeResolved(resolved: object) {

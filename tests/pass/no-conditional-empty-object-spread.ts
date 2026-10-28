@@ -3,7 +3,6 @@ interface OutputRecord {
   droppedLines: number;
 }
 
-// The rule's fix: build the object in statements, add fields only when present.
 export function takeOutput(record: OutputRecord) {
   const lines = record.appendedText;
   const droppedLines = record.droppedLines;
@@ -17,7 +16,6 @@ export function takeOutput(record: OutputRecord) {
   return output;
 }
 
-// Spreading real objects is fine.
 export function mergeDefaults(defaults: OutputRecord, overrides: OutputRecord) {
   return { ...defaults, ...overrides };
 }

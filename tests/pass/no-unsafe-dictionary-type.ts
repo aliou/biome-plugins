@@ -1,4 +1,3 @@
-// Named value types parsed with a schema are the rule's fix.
 type ToolInput = { command: string; args: string[] };
 
 interface ToolCallEvent {

@@ -1,22 +1,12 @@
 engine biome(1.0)
 language js(typescript, jsx)
 
-or {
-  `import $_ from $source` where {
-    $source <: r".*\.js[\"']$",
-    register_diagnostic(span=$source, message="Remove the .js extension. Use moduleResolution: bundler in tsconfig.json to resolve imports without file extensions.", severity="error")
+JsModuleSource() as $source where {
+  $source <: within or {
+    JsImport(),
+    JsExport()
   },
-  `import $source` where {
-    $source <: r".*\.js[\"']$",
-    register_diagnostic(span=$source, message="Remove the .js extension. Use moduleResolution: bundler in tsconfig.json to resolve imports without file extensions.", severity="error")
-  },
-  `export * from $source` where {
-    $source <: r".*\.js[\"']$",
-    register_diagnostic(span=$source, message="Remove the .js extension. Use moduleResolution: bundler in tsconfig.json to resolve imports without file extensions.", severity="error")
-  },
-  JsExport() as $exp where {
-    $exp <: contains JsModuleSource() as $source,
-    $source <: r".*\.js[\"']$",
-    register_diagnostic(span=$source, message="Remove the .js extension. Use moduleResolution: bundler in tsconfig.json to resolve imports without file extensions.", severity="error")
-  }
+  $source <: r"^[\"'](.*)\.js[\"']$"($path),
+  $source => `"$path"`,
+  register_diagnostic(span=$source, message="Remove the .js extension. Use moduleResolution: bundler in tsconfig.json to resolve imports without file extensions.", severity="error", fix_kind="unsafe")
 }
