@@ -1,0 +1,68 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/manifest_schema.json",
+  "version": 1,
+  "plugins": {
+    "rules": [
+      { "no-buried-await": "./plugins/no-buried-await.grit" },
+      {
+        "no-chained-type-assertions": "./plugins/no-chained-type-assertions.grit"
+      },
+      {
+        "no-conditional-empty-object-spread": "./plugins/no-conditional-empty-object-spread.grit"
+      },
+      { "no-emojis": "./plugins/no-emojis.grit" },
+      { "no-empty-catch": "./plugins/no-empty-catch.grit" },
+      { "no-homedir": "./plugins/no-homedir.grit" },
+      { "no-inline-imports": "./plugins/no-inline-imports.grit" },
+      { "no-inner-types": "./plugins/no-inner-types.grit" },
+      {
+        "no-interpolated-classname": "./plugins/no-interpolated-classname.grit"
+      },
+      { "no-is-record": "./plugins/no-is-record.grit" },
+      { "no-js-import-extension": "./plugins/no-js-import-extension.grit" },
+      { "no-left-border-accent": "./plugins/no-left-border-accent.grit" },
+      { "no-reflect-apply": "./plugins/no-reflect-apply.grit" },
+      { "no-reflect-get": "./plugins/no-reflect-get.grit" },
+      { "no-runtime-typeof": "./plugins/no-runtime-typeof.grit" },
+      { "no-ts-import-extension": "./plugins/no-ts-import-extension.grit" },
+      { "no-unimported-text": "./plugins/no-unimported-text.grit" },
+      { "no-unknown-parameters": "./plugins/no-unknown-parameters.grit" },
+      { "no-unknown-returns": "./plugins/no-unknown-returns.grit" },
+      {
+        "no-unsafe-dictionary-type": "./plugins/no-unsafe-dictionary-type.grit"
+      },
+      { "phosphor-icon-suffix": "./plugins/phosphor-icon-suffix.grit" },
+      { "pi-no-node-exec": "./plugins/pi-no-node-exec.grit" }
+    ],
+    "presets": {
+      "recommended": [
+        "no-buried-await",
+        "no-emojis",
+        "no-empty-catch",
+        "no-inline-imports",
+        "no-inner-types",
+        "no-is-record",
+        "no-js-import-extension",
+        "no-ts-import-extension"
+      ],
+      "strict": [
+        "no-chained-type-assertions",
+        "no-conditional-empty-object-spread",
+        "no-reflect-apply",
+        "no-reflect-get"
+      ],
+      "schema": [
+        "no-unknown-parameters",
+        "no-unknown-returns",
+        "no-unsafe-dictionary-type"
+      ],
+      "pi": ["no-unimported-text", "pi-no-node-exec"],
+      "react": ["no-interpolated-classname"]
+    }
+  },
+  "configs": [
+    { "base": "./configs/base.json" },
+    { "strict": "./configs/strict.json" },
+    { "pi": "./configs/pi.json" }
+  ]
+}

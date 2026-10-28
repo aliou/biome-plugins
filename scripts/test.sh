@@ -84,6 +84,29 @@ test_fail() {
   assert_count "$(basename "$fixture")" "$output" "$2" "${3:-}"
 }
 
+# setup_consumer
+#   Installs the package into a scratch project, the way npm would.
+setup_consumer() {
+  CONSUMER="$(mktemp -d)"
+  trap 'rm -rf "$CONSUMER"' EXIT
+  local pkg="$CONSUMER/node_modules/@aliou/biome-plugins"
+  mkdir -p "$pkg" "$CONSUMER/.pi" "$CONSUMER/.agents"
+  cp -R "$ROOT/package.json" "$ROOT/biome-manifest.json" "$ROOT/configs" "$ROOT/plugins" "$pkg/"
+  cp -R "$ROOT/tests/package/." "$CONSUMER/"
+  cp "$ROOT/tests/package/violations.ts" "$CONSUMER/.pi/"
+  cp "$ROOT/tests/package/violations.ts" "$CONSUMER/.agents/"
+  git -C "$CONSUMER" init -q
+}
+
+# test_package <name> <biome_json> <command> <expected_message> [expected_count]
+#   Runs a biome command in the scratch project with the given configuration.
+test_package() {
+  local output
+  echo "$2" >"$CONSUMER/biome.json"
+  output=$(cd "$CONSUMER" && $BIOME $3 2>&1 || true)
+  assert_count "$1" "$output" "$4" "${5:-}"
+}
+
 # test_fix <fixture> <expected_file>
 #   Applies all fixes, including unsafe ones, and compares the result to expected_file.
 test_fix() {
@@ -238,6 +261,24 @@ test_pass "tests/pass/no-unsafe-dictionary-type.ts"
 log_all "--- no-left-border-accent ---"
 test_fail "tests/fail/no-left-border-accent.css" "accent stripe"
 test_pass "tests/pass/no-left-border-accent.css"
+
+log_all "--- package ---"
+setup_consumer
+all_rules=""
+for grit in "$ROOT"/plugins/*.grit; do
+  all_rules="$all_rules\"@aliou/biome-plugins/$(basename "$grit" .grit)\","
+done
+rule_count=$(find "$ROOT/plugins" -name '*.grit' | wc -l | tr -d ' ')
+test_package "manifest exports every rule" "{\"plugins\":[${all_rules%,}]}" "inspect plugins" "enables $rule_count plugin rules" 1
+test_package "presets/recommended" '{"plugins":["@aliou/biome-plugins/presets/recommended"]}' "lint --max-diagnostics=none violations.ts" "Emojis are not allowed" 1
+test_package "configs/base ignores .pi and .agents" '{"extends":["@aliou/biome-plugins/configs/base"]}' "lint --max-diagnostics=none ." "Emojis are not allowed" 2
+test_package "configs/strict" '{"extends":["@aliou/biome-plugins/configs/strict"]}' "lint --max-diagnostics=none violations.ts" "Replace \`Reflect.get\`" 1
+test_package "configs/strict does not duplicate recommended" '{"extends":["@aliou/biome-plugins/configs/strict"]}' "lint --max-diagnostics=none violations.ts" "Emojis are not allowed" 1
+test_package "configs/pi" '{"extends":["@aliou/biome-plugins/configs/pi"]}' "lint --max-diagnostics=none violations.ts" "Text must come from a runtime import" 1
+test_package "configs/strict + configs/pi" '{"extends":["@aliou/biome-plugins/configs/strict","@aliou/biome-plugins/configs/pi"]}' "inspect plugins" "enables 14 plugin rules" 1
+test_package "configs/base formats YAML" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format workflow.yml" "Formatter would have printed" 1
+test_package "configs/base skips Markdown and pnpm files" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format table.md pnpm-workspace.yaml" "Formatter would have printed" 0
+test_package "package-qualified suppression" '{"plugins":["@aliou/biome-plugins/no-emojis"]}' "lint --max-diagnostics=none suppressed.ts" "Emojis are not allowed" 1
 
 echo ""
 echo "Summary: $PASSED_COUNT passed, $FAILED_COUNT failed"

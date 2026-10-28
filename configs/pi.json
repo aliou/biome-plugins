@@ -1,0 +1,7 @@
+{
+  "root": false,
+  "extends": ["./base.json"],
+  "plugins": [
+    { "path": "@aliou/biome-plugins/presets/pi", "resolutionKind": "config" }
+  ]
+}

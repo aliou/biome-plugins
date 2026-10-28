@@ -1,0 +1,10 @@
+{
+  "root": false,
+  "extends": ["./base.json"],
+  "plugins": [
+    {
+      "path": "@aliou/biome-plugins/presets/strict",
+      "resolutionKind": "config"
+    }
+  ]
+}

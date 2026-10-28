@@ -1,0 +1,29 @@
+{
+  "root": false,
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
+  "linter": { "enabled": true, "rules": { "preset": "recommended" } },
+  "assist": {
+    "enabled": true,
+    "actions": { "source": { "organizeImports": "on" } }
+  },
+  "markdown": { "formatter": { "enabled": false } },
+  "plugins": [
+    {
+      "path": "@aliou/biome-plugins/presets/recommended",
+      "resolutionKind": "config"
+    }
+  ],
+  "overrides": [
+    {
+      "includes": ["**/.pi/**", "**/.agents/**"],
+      "linter": { "enabled": false },
+      "formatter": { "enabled": false },
+      "assist": { "enabled": false }
+    },
+    {
+      "includes": ["**/pnpm-lock.yaml", "**/pnpm-workspace.yaml"],
+      "formatter": { "enabled": false }
+    }
+  ]
+}
