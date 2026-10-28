@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BIOME="${ROOT}/node_modules/.bin/biome"
+CONFIG="${ROOT}/tests/plugins.json"
 FAILED=0
 PASSED_COUNT=0
 FAILED_COUNT=0
@@ -64,7 +65,7 @@ test_fail() {
   local name
   name="$(basename "$fixture")"
 
-  output=$(cd "$ROOT" && "$BIOME" lint "$fixture" 2>&1 || true)
+  output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" "$fixture" 2>&1 || true)
 
   if echo "$output" | grep -qF "$expected"; then
     record_pass "  pass: $name (error detected)"
@@ -87,7 +88,7 @@ test_pass() {
   name="$(basename "$fixture")"
 
   set +e
-  output=$(cd "$ROOT" && "$BIOME" lint "$fixture" 2>&1)
+  output=$(cd "$ROOT" && "$BIOME" lint --config-path="$CONFIG" "$fixture" 2>&1)
   status=$?
   set -e
 
