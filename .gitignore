@@ -1,2 +1,9 @@
 node_modules/
 .pi/settings.json
+
+# direnv / pre-commit
+.direnv/
+result
+result-*
+.pre-commit-config.yaml
+
