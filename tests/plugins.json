@@ -9,6 +9,7 @@
     "../plugins/no-emojis.grit",
     "../plugins/no-inner-types.grit",
     "../plugins/pi-no-node-exec.grit",
+    "../plugins/no-pi-tui-truncate.grit",
     "../plugins/no-buried-await.grit",
     "../plugins/no-empty-catch.grit",
     "../plugins/no-homedir.grit",

@@ -2,8 +2,8 @@ import {
     type Component,
     Container,
     Text,
-    truncateToWidth,
 } from "@earendil-works/pi-tui";
+import { truncateToWidth } from "./truncate";
 
 class Example {
     private contentText: Text;
