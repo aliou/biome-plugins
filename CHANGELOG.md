@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.16.0
+
+### Minor Changes
+
+- 48f4fb2: Add `no-pi-tui-truncate` and include it in the `pi` preset. Disallows `truncateToWidth` from `@earendil-works/pi-tui`, which injects reset sequences that break caller styling and mis-parses non-SGR escape sequences.
+
 ## 0.15.0
 
 ### Minor Changes
