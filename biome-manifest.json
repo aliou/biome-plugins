@@ -22,6 +22,9 @@
       { "no-js-import-extension": "./plugins/no-js-import-extension.grit" },
       { "no-left-border-accent": "./plugins/no-left-border-accent.grit" },
       { "no-pi-tui-truncate": "./plugins/no-pi-tui-truncate.grit" },
+      {
+        "no-pnpm-only-protocols": "./plugins/no-pnpm-only-protocols.grit"
+      },
       { "no-reflect-apply": "./plugins/no-reflect-apply.grit" },
       { "no-reflect-get": "./plugins/no-reflect-get.grit" },
       { "no-runtime-typeof": "./plugins/no-runtime-typeof.grit" },
@@ -57,7 +60,12 @@
         "no-unknown-returns",
         "no-unsafe-dictionary-type"
       ],
-      "pi": ["no-pi-tui-truncate", "no-unimported-text", "pi-no-node-exec"],
+      "pi": [
+        "no-pi-tui-truncate",
+        "no-pnpm-only-protocols",
+        "no-unimported-text",
+        "pi-no-node-exec"
+      ],
       "react": ["no-interpolated-classname"]
     }
   },

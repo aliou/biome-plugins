@@ -1,0 +1,12 @@
+{
+  "name": "fixture",
+  "dependencies": {
+    "a": "^1.0.0",
+    "b": "latest",
+    "c": "file:../local",
+    "d": "npm:left-pad@1.3.0",
+    "e": "git+https://github.com/user/repo.git",
+    "f": "user/repo",
+    "g": "https://example.com/pkg.tgz"
+  }
+}

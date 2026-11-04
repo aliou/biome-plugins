@@ -47,7 +47,7 @@ Presets do not overlap. Stack them on top of `recommended`.
 | `presets/recommended` | `no-buried-await`, `no-emojis`, `no-empty-catch`, `no-inline-imports`, `no-inner-types`, `no-is-record`, `no-js-import-extension`, `no-ts-import-extension` |
 | `presets/strict` | `no-chained-type-assertions`, `no-conditional-empty-object-spread`, `no-reflect-apply`, `no-reflect-get` |
 | `presets/schema` | `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type` |
-| `presets/pi` | `no-pi-tui-truncate`, `no-unimported-text`, `pi-no-node-exec` |
+| `presets/pi` | `no-pi-tui-truncate`, `no-pnpm-only-protocols`, `no-unimported-text`, `pi-no-node-exec` |
 | `presets/react` | `no-interpolated-classname` |
 
 To scope a rule or preset to some files, use the object form:
@@ -89,6 +89,7 @@ All rules report errors, except `no-left-border-accent`, which warns.
 | `no-js-import-extension` | Disallows `.js` extensions in import and export paths. Unsafe fix removes the extension. |
 | `no-left-border-accent` | Disallows `border-left` accent stripes on non-`blockquote` boxes in CSS. |
 | `no-pi-tui-truncate` | Disallows `truncateToWidth` from `@earendil-works/pi-tui`. Its version injects reset sequences that break caller styling and mis-parses non-SGR escape sequences. Use the shared truncate helper. |
+| `no-pnpm-only-protocols` | Disallows dependency protocols npm cannot install (`catalog:`, `workspace:`, `link:`, `portal:`, `patch:`). Use a concrete version or range. |
 | `no-reflect-apply` | Disallows `Reflect.apply()`. |
 | `no-reflect-get` | Disallows `Reflect.get()`. |
 | `no-runtime-typeof` | Disallows `typeof` checks. Parse input with a schema at the boundary. |

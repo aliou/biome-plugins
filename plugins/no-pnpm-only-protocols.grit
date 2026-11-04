@@ -1,0 +1,7 @@
+engine biome(1.0)
+language json
+
+JsonStringValue() as $value where {
+  $value <: r"^\"(?:catalog|workspace|link|portal|patch):.*\"$",
+  register_diagnostic(span=$value, message="npm cannot install pnpm-only protocols (catalog:, workspace:, link:, portal:, patch:). Use a concrete version or range.", severity="error")
+}

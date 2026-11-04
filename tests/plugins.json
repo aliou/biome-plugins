@@ -23,7 +23,8 @@
     "../plugins/no-unknown-parameters.grit",
     "../plugins/no-unknown-returns.grit",
     "../plugins/no-unsafe-dictionary-type.grit",
-    "../plugins/no-left-border-accent.grit"
+    "../plugins/no-left-border-accent.grit",
+    "../plugins/no-pnpm-only-protocols.grit"
   ],
   "linter": {
     "enabled": true,

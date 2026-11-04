@@ -50,7 +50,7 @@ Add entries to `plugins` on top of a config, or without one:
 | `presets/recommended` | `no-buried-await`, `no-emojis`, `no-empty-catch`, `no-inline-imports`, `no-inner-types`, `no-is-record`, `no-js-import-extension`, `no-ts-import-extension` | Any TypeScript project with `moduleResolution: "bundler"`. |
 | `presets/strict` | `no-chained-type-assertions`, `no-conditional-empty-object-spread`, `no-reflect-apply`, `no-reflect-get` | Projects that reject type escape hatches. |
 | `presets/schema` | `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type` | Projects that parse all external input with a schema library. |
-| `presets/pi` | `no-pi-tui-truncate`, `no-unimported-text`, `pi-no-node-exec` | pi extensions. |
+| `presets/pi` | `no-pi-tui-truncate`, `no-pnpm-only-protocols`, `no-unimported-text`, `pi-no-node-exec` | pi extensions. |
 | `presets/react` | `no-interpolated-classname` | React projects with a `cn()` helper. |
 | `no-homedir` | | Projects with a paths utility to point to. |
 | `no-runtime-typeof` | | Projects that parse input with a schema at I/O boundaries. |

@@ -268,6 +268,10 @@ log_all "--- no-left-border-accent ---"
 test_fail "tests/fail/no-left-border-accent.css" "accent stripe"
 test_pass "tests/pass/no-left-border-accent.css"
 
+log_all "--- no-pnpm-only-protocols ---"
+test_fail "tests/fail/no-pnpm-only-protocols.json" "npm cannot install pnpm-only protocols" 5
+test_pass "tests/pass/no-pnpm-only-protocols.json"
+
 log_all "--- package ---"
 setup_consumer
 all_rules=""
@@ -281,7 +285,7 @@ test_package "configs/base ignores .pi and .agents" '{"extends":["@aliou/biome-p
 test_package "configs/strict" '{"extends":["@aliou/biome-plugins/configs/strict"]}' "lint --max-diagnostics=none violations.ts" "Replace \`Reflect.get\`" 1
 test_package "configs/strict does not duplicate recommended" '{"extends":["@aliou/biome-plugins/configs/strict"]}' "lint --max-diagnostics=none violations.ts" "Emojis are not allowed" 1
 test_package "configs/pi" '{"extends":["@aliou/biome-plugins/configs/pi"]}' "lint --max-diagnostics=none violations.ts" "Text must come from a runtime import" 1
-test_package "configs/strict + configs/pi" '{"extends":["@aliou/biome-plugins/configs/strict","@aliou/biome-plugins/configs/pi"]}' "inspect plugins" "enables 15 plugin rules" 1
+test_package "configs/strict + configs/pi" '{"extends":["@aliou/biome-plugins/configs/strict","@aliou/biome-plugins/configs/pi"]}' "inspect plugins" "enables 16 plugin rules" 1
 test_package "configs/base formats YAML" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format workflow.yml" "Formatter would have printed" 1
 test_package "configs/base skips Markdown and pnpm files" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format table.md pnpm-workspace.yaml" "Formatter would have printed" 0
 test_package "package-qualified suppression" '{"plugins":["@aliou/biome-plugins/no-emojis"]}' "lint --max-diagnostics=none suppressed.ts" "Emojis are not allowed" 1
