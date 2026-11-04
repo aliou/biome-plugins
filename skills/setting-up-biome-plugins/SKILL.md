@@ -23,8 +23,8 @@ Start from a config and keep only project-specific settings in `biome.json`:
 ```
 
 | Config | Use when |
-|---|---|
-| `configs/base` | Any TypeScript project. Git ignore file, 2-space indent, Biome recommended rules, organize imports, `presets/recommended`. Skips `.pi/` and `.agents/`. Does not format Markdown or pnpm-managed YAML. |
+| --- | --- |
+| `configs/base` | Any TypeScript project. Git ignore file, 2-space indent, Biome recommended rules, organize imports, `presets/recommended`. Skips `.pi/`, `.agents/`, and pnpm-managed YAML. Markdown: unwraps paragraphs to one line, formats frontmatter and fenced code blocks. |
 | `configs/strict` | `base` plus `presets/strict`. New projects. |
 | `configs/pi` | `base` plus `presets/pi`. [pi](https://pi.dev) extensions and packages. |
 
@@ -46,16 +46,16 @@ Add entries to `plugins` on top of a config, or without one:
 ```
 
 | Entry | Rules | Use when |
-|---|---|---|
+| --- | --- | --- |
 | `presets/recommended` | `no-buried-await`, `no-emojis`, `no-empty-catch`, `no-inline-imports`, `no-inner-types`, `no-is-record`, `no-js-import-extension`, `no-ts-import-extension` | Any TypeScript project with `moduleResolution: "bundler"`. |
 | `presets/strict` | `no-chained-type-assertions`, `no-conditional-empty-object-spread`, `no-reflect-apply`, `no-reflect-get` | Projects that reject type escape hatches. |
 | `presets/schema` | `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type` | Projects that parse all external input with a schema library. |
 | `presets/pi` | `no-pi-tui-truncate`, `no-pnpm-only-protocols`, `no-unimported-text`, `pi-no-node-exec` | pi extensions. |
 | `presets/react` | `no-interpolated-classname` | React projects with a `cn()` helper. |
-| `no-homedir` | | Projects with a paths utility to point to. |
-| `no-runtime-typeof` | | Projects that parse input with a schema at I/O boundaries. |
-| `phosphor-icon-suffix` | | Projects importing `@phosphor-icons/react`. |
-| `no-left-border-accent` | | CSS projects. |
+| `no-homedir` |  | Projects with a paths utility to point to. |
+| `no-runtime-typeof` |  | Projects that parse input with a schema at I/O boundaries. |
+| `phosphor-icon-suffix` |  | Projects importing `@phosphor-icons/react`. |
+| `no-left-border-accent` |  | CSS projects. |
 
 Presets do not overlap, so stacking them never reports a rule twice. Do not also list a rule that an enabled preset includes: Biome reports it twice.
 
@@ -68,7 +68,10 @@ Use the object form. Globs match relative to the `biome.json` that declares them
 ```json
 {
   "plugins": [
-    { "path": "@aliou/biome-plugins/presets/schema", "includes": ["src/api/**"] }
+    {
+      "path": "@aliou/biome-plugins/presets/schema",
+      "includes": ["src/api/**"]
+    }
   ]
 }
 ```

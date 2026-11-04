@@ -1,8 +1,10 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-  "files": {
-    "includes": ["**", "!.pi", "!tests", "!**/*.md", "!pnpm-lock.yaml"]
-  },
-  "formatter": { "indentStyle": "space", "indentWidth": 2 }
+  "files": { "includes": ["**", "!.pi", "!tests", "!pnpm-lock.yaml"] },
+  "formatter": { "indentStyle": "space", "indentWidth": 2 },
+  "markdown": {
+    "parser": { "frontmatter": true },
+    "formatter": { "proseWrap": "never" }
+  }
 }

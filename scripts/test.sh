@@ -287,7 +287,8 @@ test_package "configs/strict does not duplicate recommended" '{"extends":["@alio
 test_package "configs/pi" '{"extends":["@aliou/biome-plugins/configs/pi"]}' "lint --max-diagnostics=none violations.ts" "Text must come from a runtime import" 1
 test_package "configs/strict + configs/pi" '{"extends":["@aliou/biome-plugins/configs/strict","@aliou/biome-plugins/configs/pi"]}' "inspect plugins" "enables 16 plugin rules" 1
 test_package "configs/base formats YAML" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format workflow.yml" "Formatter would have printed" 1
-test_package "configs/base skips Markdown and pnpm files" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format table.md pnpm-workspace.yaml" "Formatter would have printed" 0
+test_package "configs/base formats Markdown" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format table.md" "Formatter would have printed" 1
+test_package "configs/base skips pnpm YAML" '{"extends":["@aliou/biome-plugins/configs/base"]}' "format pnpm-workspace.yaml" "Formatter would have printed" 0
 test_package "package-qualified suppression" '{"plugins":["@aliou/biome-plugins/no-emojis"]}' "lint --max-diagnostics=none suppressed.ts" "Emojis are not allowed" 1
 
 echo ""

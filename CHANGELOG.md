@@ -17,7 +17,6 @@
 ### Minor Changes
 
 - 472fac5: Publish rules, presets, and shared configs through a Biome manifest. Requires Biome 2.6.
-
   - Extend `@aliou/biome-plugins/configs/base`, `configs/strict`, or `configs/pi` for formatter, linter, and plugin defaults.
   - Enable `@aliou/biome-plugins/presets/<name>` (`recommended`, `strict`, `schema`, `pi`, `react`) or `@aliou/biome-plugins/<rule>` in `plugins`.
   - Rules loaded through the package are suppressed with `lint/plugin/@aliou/biome-plugins/<rule>`. `lint/plugin/<rule>` only matches rules loaded from a `.grit` path.
@@ -29,18 +28,13 @@
 
 ### Minor Changes
 
-- 34e8111: Add `no-left-border-accent` plugin: flags `border-left` shorthand used as an
-  ad-hoc accent stripe on non-`blockquote` boxes (any width), and
-  `border-left-width` overrides that thicken one side of a full `border`.
-  Exempts the `blockquote` element (any selector form), triangle/arrow shapes,
-  and zero-width resets. Targets CSS (`.css` and `<style>` blocks in HTML).
+- 34e8111: Add `no-left-border-accent` plugin: flags `border-left` shorthand used as an ad-hoc accent stripe on non-`blockquote` boxes (any width), and `border-left-width` overrides that thicken one side of a full `border`. Exempts the `blockquote` element (any selector form), triangle/arrow shapes, and zero-width resets. Targets CSS (`.css` and `<style>` blocks in HTML).
 
 ## 0.13.0
 
 ### Minor Changes
 
 - 0e03f8d: Add eight plugins ported from [anti-slop](https://github.com/dmmulroy/anti-slop):
-
   - `no-chained-type-assertions`
   - `no-conditional-empty-object-spread`
   - `no-reflect-apply`

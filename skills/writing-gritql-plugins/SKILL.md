@@ -42,13 +42,8 @@ A match can be rewritten with `=>`, turning the diagnostic into a fixable one:
 
 ```grit
 `console.log($msg)` as $call where {
-    register_diagnostic(
-        span = $call,
-        message = "Use console.info instead of console.log.",
-        severity = "warn",
-        fix_kind = "safe"
-    ),
-    $call => `console.info($msg)`
+  register_diagnostic(span=$call, message="Use console.info instead of console.log.", severity="warn", fix_kind="safe"),
+  $call => `console.info($msg)`
 }
 ```
 
@@ -86,7 +81,7 @@ Backtick-wrapped code matches structurally (ignores formatting, quote style, whi
 ### Operators
 
 | Operator | Meaning | Example |
-|---|---|---|
+| --- | --- | --- |
 | `<:` | matches | `$method <: "log"` |
 | `contains` | search descendants | `$value <: contains JsTemplateExpression()` |
 | `or { ... }` | match any | `$m <: or { "log", "warn" }` |
@@ -107,6 +102,18 @@ JsParameters() as $params where {
 
 Useful when the shape you need has no dedicated syntax node (hex colors, keyword-prefixed statements, naming conventions).
 
+### Source ranges
+
+`range()` filters matched nodes by source position. Arguments are optional named integers: `start_line`, `start_column`, `end_line`, `end_column` (columns require their line). The whole node must fit inside the range:
+
+```grit
+call_expression() as $call where {
+  $call <: range(start_line=2, start_column=3, end_line=2, end_column=11)
+}
+```
+
+It filters existing matches; it cannot extract arbitrary source lines or make comments independently matchable. Rarely useful for lint rules, which should match on syntax, not layout.
+
 ### Named CST nodes
 
 Match Biome's concrete syntax tree nodes directly. Names are PascalCase (`JsConditionalExpression`, `TsAnyType`, `JsonMemberName`); both snake_case (`jsx_attribute`) and PascalCase work in snippets.
@@ -114,11 +121,8 @@ Match Biome's concrete syntax tree nodes directly. Names are PascalCase (`JsCond
 Nodes support **field matching**, nested like type assertions:
 
 ```grit
-JsCatchClause(body = JsBlockStatement(statements = [])) as $catch where {
-    register_diagnostic(
-        span = $catch,
-        message = "Empty catch blocks are not allowed. Handle the error or add a comment explaining why it is ignored."
-    )
+JsCatchClause(body=JsBlockStatement(statements=[])) as $catch where {
+  register_diagnostic(span=$catch, message="Empty catch blocks are not allowed. Handle the error or add a comment explaining why it is ignored.")
 }
 ```
 
@@ -126,10 +130,10 @@ Combine unrelated syntax shapes under one `or`, unifying arms with the same `as 
 
 ```grit
 or {
-    `eval($code)` as $match,
-    `new Function($...)` as $match
+  `eval($code)` as $match,
+  `new Function($...)` as $match
 } where {
-    register_diagnostic(span = $match, message = "Dynamic code evaluation is not allowed.")
+  register_diagnostic(span=$match, message="Dynamic code evaluation is not allowed.")
 }
 ```
 
@@ -145,13 +149,9 @@ For JSON plugins, snippets with metavariables are not supported; match CST nodes
 engine biome(1.0)
 language js(jsx)
 
-jsx_attribute(name = "className", $value) where {
-    $value <: contains JsTemplateExpression(),
-    register_diagnostic(
-        span = $value,
-        message = "Use cn() instead of template literal in className",
-        severity = "error"
-    )
+jsx_attribute(name="className", $value) where {
+  $value <: contains JsTemplateExpression(),
+  register_diagnostic(span=$value, message="Use cn() instead of template literal in className", severity="error")
 }
 ```
 
@@ -162,12 +162,9 @@ engine biome(1.0)
 language css
 
 `$selector { $props }` where {
-    $props <: contains `color: $color` as $rule,
-    not $selector <: r"\.color-.*",
-    register_diagnostic(
-        span = $rule,
-        message = "Don't set explicit colors. Use .color-* classes instead."
-    )
+  $props <: contains `color: $color` as $rule,
+  not $selector <: r"\.color-.*",
+  register_diagnostic(span=$rule, message="Don't set explicit colors. Use .color-* classes instead.")
 }
 ```
 
@@ -179,7 +176,10 @@ In `biome.json`, a plugin entry is a path, a package export, or an object with `
 {
   "plugins": [
     "./plugins/my-rule.grit",
-    { "path": "@aliou/biome-plugins/pi-no-node-exec", "includes": ["extensions/**/*.ts"] }
+    {
+      "path": "@aliou/biome-plugins/pi-no-node-exec",
+      "includes": ["extensions/**/*.ts"]
+    }
   ]
 }
 ```
@@ -211,6 +211,7 @@ Plugin diagnostics appear with the `plugin` category in output.
 - No cross-file analysis: patterns only see the file being linted.
 - No plugin options; no severity override, no banned-name lists.
 - Still experimental; some GritQL features are missing (tracking: [biomejs/biome#2582](https://github.com/biomejs/biome/issues/2582)).
+- Rules that need scope analysis, type information, or the semantic model cannot be written in GritQL. Biome's JavaScript plugins (developer preview since 2.6, tracking: [biomejs/biome#11420](https://github.com/biomejs/biome/issues/11420)) are the alternative: they query CST nodes with `ast()` or `semantic()` and get `ctx.model`. They are verbose and can regress consumer performance, so prefer GritQL when a pattern suffices.
 
 ## Gotchas found in practice
 

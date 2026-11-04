@@ -20,8 +20,8 @@ A config sets formatter, linter, and plugin defaults. Extend one in `biome.json`
 ```
 
 | Config | Contents |
-|---|---|
-| `configs/base` | Git ignore file, 2-space indent, Biome's recommended rules, organize imports, and the `recommended` preset. Skips `.pi/` and `.agents/`, does not format Markdown, `pnpm-lock.yaml`, or `pnpm-workspace.yaml`. |
+| --- | --- |
+| `configs/base` | Git ignore file, 2-space indent, Biome's recommended rules, organize imports, and the `recommended` preset. Skips `.pi/` and `.agents/`, and `pnpm-lock.yaml`/`pnpm-workspace.yaml`. Markdown: joins wrapped paragraphs into one line, formats YAML frontmatter and fenced code blocks. |
 | `configs/strict` | `base` plus the `strict` preset. |
 | `configs/pi` | `base` plus the `pi` preset. |
 
@@ -43,7 +43,7 @@ Enable presets or single rules in `plugins`:
 Presets do not overlap. Stack them on top of `recommended`.
 
 | Preset | Rules |
-|---|---|
+| --- | --- |
 | `presets/recommended` | `no-buried-await`, `no-emojis`, `no-empty-catch`, `no-inline-imports`, `no-inner-types`, `no-is-record`, `no-js-import-extension`, `no-ts-import-extension` |
 | `presets/strict` | `no-chained-type-assertions`, `no-conditional-empty-object-spread`, `no-reflect-apply`, `no-reflect-get` |
 | `presets/schema` | `no-unknown-parameters`, `no-unknown-returns`, `no-unsafe-dictionary-type` |
@@ -55,7 +55,10 @@ To scope a rule or preset to some files, use the object form:
 ```json
 {
   "plugins": [
-    { "path": "@aliou/biome-plugins/presets/schema", "includes": ["src/api/**"] }
+    {
+      "path": "@aliou/biome-plugins/presets/schema",
+      "includes": ["src/api/**"]
+    }
   ]
 }
 ```
@@ -75,7 +78,7 @@ Use the package-qualified rule name, or `lint/plugin` to suppress any plugin:
 All rules report errors, except `no-left-border-accent`, which warns.
 
 | Rule | Description |
-|---|---|
+| --- | --- |
 | `no-buried-await` | Disallows `await` inside parentheses or call arguments. Await the value first, then use it. |
 | `no-chained-type-assertions` | Disallows chained type assertions such as `x as unknown as User`, except chains made only of `as const`. |
 | `no-conditional-empty-object-spread` | Disallows spreading a conditional with `{}` on one branch, such as `{ ...(cond ? { x } : {}) }`. |
