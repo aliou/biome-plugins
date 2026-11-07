@@ -60,7 +60,7 @@
         "no-unknown-returns",
         "no-unsafe-dictionary-type"
       ],
-      "pi": [
+      "pi-coding-agent-extension": [
         "no-pi-tui-truncate",
         "no-pnpm-only-protocols",
         "no-unimported-text",
@@ -72,6 +72,6 @@
   "configs": [
     { "base": "./configs/base.json" },
     { "strict": "./configs/strict.json" },
-    { "pi": "./configs/pi.json" }
+    { "pi-coding-agent-extension": "./configs/pi-coding-agent-extension.json" }
   ]
 }
