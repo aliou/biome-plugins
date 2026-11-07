@@ -1,5 +1,12 @@
 # @aliou/biome-plugins
 
+## 0.18.0
+
+### Minor Changes
+
+- fba01ce: `configs/base` now formats Markdown: paragraphs unwrap to a single line, YAML frontmatter is parsed and formatted, and fenced code blocks are formatted with their language's formatter. Repositories extending the config should expect `.md` files to be reformatted on the next install.
+- c2ae766: Rename the `pi` preset and config to `pi-coding-agent-extension`.
+
 ## 0.17.0
 
 ### Minor Changes
@@ -35,6 +42,7 @@
 ### Minor Changes
 
 - 0e03f8d: Add eight plugins ported from [anti-slop](https://github.com/dmmulroy/anti-slop):
+
   - `no-chained-type-assertions`
   - `no-conditional-empty-object-spread`
   - `no-reflect-apply`
