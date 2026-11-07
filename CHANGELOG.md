@@ -1,5 +1,11 @@
 # @aliou/biome-plugins
 
+## 0.18.1
+
+### Patch Changes
+
+- 9e4e28d: Recommend `@aliou/pi-utils-ui` as the shared `truncateToWidth` import for standalone Pi extensions.
+
 ## 0.18.0
 
 ### Minor Changes
