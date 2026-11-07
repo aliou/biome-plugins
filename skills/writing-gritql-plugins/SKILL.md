@@ -224,8 +224,7 @@ Plugin diagnostics appear with the `plugin` category in output.
 ## After creating a plugin
 
 1. Add the rule to `plugins.rules` in `biome-manifest.json`, and to a preset only if every project using that preset should get it.
-2. Add a row to the rule table in `README.md`.
-3. If it joins a preset or stands alone, update the table in `skills/setting-up-biome-plugins/SKILL.md`.
+2. If a preset or config changed, update the config and preset tables in `README.md` and `skills/setting-up-biome-plugins/SKILL.md`.
 
 ## References
 

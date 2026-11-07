@@ -4,13 +4,12 @@
 
 ## Commands
 
-- Run everything inside `nix develop`. It provides node and pnpm and installs the pre-commit hooks (`biome check --write`, lockfile check, `pnpm test`).
-- `pnpm test` runs `scripts/test.sh`. It lints fixtures with `tests/plugins.json` and installs the package into a scratch project to test the manifest, presets, and configs.
+- `pnpm test` runs `scripts/test.sh`. It lints the fixtures in `tests/fail/` and `tests/pass/` through `tests/plugins.json` — one fail fixture per rule, asserting the exact diagnostic message and count — then packs the tarball into a scratch project and tests the manifest, presets, and configs as npm would install them.
 - The root `biome.json` only checks this repository's own files. Do not add plugins to it.
 
 ## Invariants
 
-- Rule names are the `.grit` file stems and appear in suppressions as `lint/plugin/@aliou/biome-plugins/<name>`. Renaming a rule is a breaking change.
+- Rule names are the `.grit` file stems and appear in suppressions as `lint/plugin/@aliou/biome-plugins/<name>`.
 - Every `.grit` file needs an entry in `biome-manifest.json`, fixtures in `tests/fail/` and `tests/pass/`, and a `scripts/test.sh` call that asserts the exact diagnostic count.
 - Presets must not share rules. Biome reports a rule twice when two enabled entries include it.
 - Configs reference presets with `"resolutionKind": "config"` so they resolve from the package, not the consuming project.
@@ -18,10 +17,13 @@
 
 ## Documentation triggers
 
-- Rule, preset, or config changes: update the tables in `README.md` and `skills/setting-up-biome-plugins/SKILL.md`.
+- Preset or config changes: update the config and preset tables in `README.md` and `skills/setting-up-biome-plugins/SKILL.md`.
 - New GritQL engine behavior or gotchas: update `skills/writing-gritql-plugins/SKILL.md`.
 
 ## Pointers
 
 - Before writing or debugging a `.grit` file, read `skills/writing-gritql-plugins/SKILL.md`.
-- Before adding a changeset, read `.pi/skills/biome-plugins-changesets/SKILL.md`.
+
+## Changesets
+
+Every change to a plugin, preset, or config that will be published needs a changeset file in `.changeset/`, committed with the change. Releases go through the GitHub Actions release PR on main.
